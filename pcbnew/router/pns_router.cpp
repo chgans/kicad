@@ -670,6 +670,21 @@ int PNS_ROUTER::DpNetPolarity(int aNet)
     return MatchDpSuffix( refName, dummy1, dummy2 );
 }
 
+bool PNS_ROUTER::IsPairedNet(int aNet)
+{
+    return false; // FIXME
+}
+
+int PNS_ROUTER::PairingPolarity(int aNet)
+{
+    return 0; // FIXME
+}
+
+int PNS_ROUTER::GetPairedNet(int aNet)
+{
+    return 0; // FIXME
+}
+
 void PNS_ROUTER::DrawDebugPoint(VECTOR2I aP, int aColor)
 {
     SHAPE_LINE_CHAIN l;
@@ -725,6 +740,17 @@ void PNS_ROUTER::DrawDebugDirs(VECTOR2D aP, int aMask, int aColor)
             DrawDebugSeg( SEG( aP, aP + v ), aColor );
         }
     }
+}
+
+bool PNS_ROUTER::ValidateClearanceForNet(int aClearance, int aNet)
+{
+    NETCLASSPTR netclass = m_board->FindNet( aNet )->GetNetClass();
+    return aClearance < netclass->GetClearance();
+}
+
+bool PNS_ROUTER::ValidateTrackWidth(int aWidth)
+{
+    return aWidth < m_board->GetDesignSettings().m_TrackMinWidth;
 }
 
 

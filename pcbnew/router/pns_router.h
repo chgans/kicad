@@ -222,10 +222,18 @@ public:
     virtual int DpCoupledNet( int aNet );
     virtual int DpNetPolarity( int aNet );
 
+    bool IsPairedNet( int aNet );
+    // Returns >0 for positive net of a pair, <0 for negative net of a apir, 0 if net is not paired
+    int PairingPolarity( int aNet );
+    int GetPairedNet( int aNet );
+
     virtual void DrawDebugPoint( VECTOR2I aP, int aColor );
     virtual void DrawDebugBox( BOX2I aB, int aColor );
     virtual void DrawDebugSeg( SEG aS, int aColor );
     virtual void DrawDebugDirs( VECTOR2D aP, int aMask, int aColor );
+
+    bool ValidateClearanceForNet( int aClearance, int aNet );
+    bool ValidateTrackWidth( int aWidth );
 
 private:
     void movePlacing( const VECTOR2I& aP, PNS_ITEM* aItem );

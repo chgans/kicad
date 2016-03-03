@@ -226,7 +226,6 @@ private:
 
     bool findDpPrimitivePair( const VECTOR2I& aP, PNS_ITEM* aItem, PNS_DP_PRIMITIVE_PAIR& aPair );
     OPT_VECTOR2I getDanglingAnchor( PNS_NODE* aNode, PNS_ITEM* aItem );
-    int matchDpSuffix( wxString aNetName, wxString& aComplementNet, wxString& aBaseDpName );
     bool attemptWalk( PNS_NODE* aNode, PNS_DIFF_PAIR* aCurrent, PNS_DIFF_PAIR& aWalk, bool aPFirst, bool aWindCw, bool aSolidsOnly );
     bool propagateDpHeadForces ( const VECTOR2I& aP, VECTOR2I& aNewP );
 
