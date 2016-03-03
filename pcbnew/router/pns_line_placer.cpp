@@ -21,8 +21,6 @@
 #include <boost/foreach.hpp>
 #include <boost/optional.hpp>
 
-#include <colors.h>
-
 #include "trace.h"
 
 #include "pns_node.h"
