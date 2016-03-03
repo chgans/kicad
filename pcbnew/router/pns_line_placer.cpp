@@ -1048,7 +1048,7 @@ bool PNS_LINE_PLACER::buildInitialLine( const VECTOR2I& aP, PNS_LINE& aHead )
     }
     else
     {
-        if( Settings().GetFreeAngleMode() && Settings().Mode() == RM_MarkObstacles )
+        if( Settings().FreeAngleMode() && Settings().Mode() == RM_MarkObstacles )
         {
             l = SHAPE_LINE_CHAIN( m_p_start, aP );
         }

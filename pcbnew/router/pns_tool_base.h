@@ -49,6 +49,9 @@ public:
         return m_savedSettings;
     }
 
+    virtual void SavePNSSettings( TOOL_SETTINGS& aSettings ) const;
+    virtual void LoadPNSSettings( const TOOL_SETTINGS& aSettings );
+
 protected:
 
     virtual PNS_ITEM* pickSingleItem( const VECTOR2I& aWhere, int aNet = -1, int aLayer = -1 );

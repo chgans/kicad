@@ -117,6 +117,44 @@ void PNS_TOOL_BASE::Reset( RESET_REASON aReason )
         m_router->SetView( getView() );
 }
 
+void PNS_TOOL_BASE::SavePNSSettings(TOOL_SETTINGS &aSettings) const
+{
+    aSettings.Set( "Mode", (int) m_savedSettings.Mode() );
+    aSettings.Set( "OptimizerEffort", (int) m_savedSettings.OptimizerEffort() );
+    aSettings.Set( "RemoveLoops", m_savedSettings.RemoveLoops() );
+    aSettings.Set( "SmartPads", m_savedSettings.SmartPads() );
+    aSettings.Set( "ShoveVias", m_savedSettings.ShoveVias() );
+    aSettings.Set( "StartDiagonal", m_savedSettings.StartDiagonal() );
+    aSettings.Set( "ShoveTimeLimit", m_savedSettings.ShoveTimeLimit() );
+    aSettings.Set( "ShoveIterationLimit", m_savedSettings.ShoveIterationLimit() );
+    aSettings.Set( "WalkaroundIterationLimit", m_savedSettings.WalkaroundIterationLimit() );
+    aSettings.Set( "JumpOverObstacles", m_savedSettings.JumpOverObstacles() );
+    aSettings.Set( "SmoothDraggedSegments", m_savedSettings.SmoothDraggedSegments() );
+    aSettings.Set( "CanViolateDRC", m_savedSettings.CanViolateDRC() );
+    aSettings.Set( "SuggestFinish", m_savedSettings.SuggestFinish() );
+    aSettings.Set( "FreeAngleMode", m_savedSettings.FreeAngleMode() );
+    aSettings.Set( "InlineDragEnabled", m_savedSettings.InlineDragEnabled() );
+}
+
+void PNS_TOOL_BASE::LoadPNSSettings(const TOOL_SETTINGS &aSettings)
+{
+    m_savedSettings.SetMode( (PNS_MODE) aSettings.Get( "Mode", (int) RM_Walkaround ) );
+    m_savedSettings.SetOptimizerEffort( (PNS_OPTIMIZATION_EFFORT) aSettings.Get( "OptimizerEffort", (int) OE_MEDIUM ) );
+    m_savedSettings.SetRemoveLoops( aSettings.Get( "RemoveLoops", true ) );
+    m_savedSettings.SetSmartPads( aSettings.Get( "SmartPads", true ) );
+    m_savedSettings.SetShoveVias( aSettings.Get( "ShoveVias", true ) );
+    m_savedSettings.SetStartDiagonal( aSettings.Get( "StartDiagonal", false ) );
+    m_savedSettings.SetShoveTimeLimit( aSettings.Get( "ShoveTimeLimit", 1000 ) );
+    m_savedSettings.SetShoveIterationLimit( aSettings.Get( "ShoveIterationLimit", 250 ) );
+    m_savedSettings.SetWalkaroundIterationLimit( aSettings.Get( "WalkaroundIterationLimit", 50 ) );
+    m_savedSettings.SetJumpOverObstacles( aSettings.Get( "JumpOverObstacles", false  ) );
+    m_savedSettings.SetSmoothDraggedSegments( aSettings.Get( "SmoothDraggedSegments", true ) );
+    m_savedSettings.SetCanViolateDRC( aSettings.Get( "CanViolateDRC", false ) );
+    m_savedSettings.SetSuggestFinish( aSettings.Get( "SuggestFinish", false ) );
+    m_savedSettings.SetFreeAngleMode( aSettings.Get( "FreeAngleMode", false ) );
+    m_savedSettings.SetInlineDragEnabled( aSettings.Get( "InlineDragEnabled", false ) );
+}
+
 
 PNS_ITEM* PNS_TOOL_BASE::pickSingleItem( const VECTOR2I& aWhere, int aNet, int aLayer )
 {

@@ -18,15 +18,13 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <class_board.h>
-
 #include "pns_item.h"
 #include "pns_via.h"
 #include "pns_solid.h"
 #include "pns_node.h"
 #include "pns_sizes_settings.h"
 
-int PNS_SIZES_SETTINGS::inheritTrackWidth( PNS_ITEM* aItem )
+int PNS_SIZES_SETTINGS::inheritedTrackWidth( const PNS_ITEM* aItem )
 {
     VECTOR2I p;
 
@@ -35,15 +33,15 @@ int PNS_SIZES_SETTINGS::inheritTrackWidth( PNS_ITEM* aItem )
     switch( aItem->Kind() )
     {
     case PNS_ITEM::VIA:
-        p = static_cast<PNS_VIA*>( aItem )->Pos();
+        p = static_cast<const PNS_VIA*>( aItem )->Pos();
         break;
 
     case PNS_ITEM::SOLID:
-        p = static_cast<PNS_SOLID*>( aItem )->Pos();
+        p = static_cast<const PNS_SOLID*>( aItem )->Pos();
         break;
 
     case PNS_ITEM::SEGMENT:
-        return static_cast<PNS_SEGMENT*>( aItem )->Width();
+        return static_cast<const PNS_SEGMENT*>( aItem )->Width();
 
     default:
         return 0;
@@ -69,62 +67,6 @@ int PNS_SIZES_SETTINGS::inheritTrackWidth( PNS_ITEM* aItem )
 }
 
 
-void PNS_SIZES_SETTINGS::Init( BOARD* aBoard, PNS_ITEM* aStartItem, int aNet )
-{
-    BOARD_DESIGN_SETTINGS &bds = aBoard->GetDesignSettings();
-
-    NETCLASSPTR netClass;
-    int net = aNet;
-
-    if( aStartItem )
-        net = aStartItem->Net();
-
-    if( net >= 0 )
-    {
-        NETINFO_ITEM* ni = aBoard->FindNet( net );
-
-        if( ni )
-        {
-            wxString netClassName = ni->GetClassName();
-            netClass = bds.m_NetClasses.Find( netClassName );
-        }
-    }
-
-    if( !netClass )
-        netClass = bds.GetDefault();
-
-    m_trackWidth = 0;
-
-    if( bds.m_UseConnectedTrackWidth && aStartItem != NULL )
-    {
-        m_trackWidth = inheritTrackWidth( aStartItem );
-    }
-
-    if( !m_trackWidth && ( bds.UseNetClassTrack() && netClass != NULL ) ) // netclass value
-    {
-        m_trackWidth = netClass->GetTrackWidth();
-    }
-
-    if( !m_trackWidth )
-    {
-        m_trackWidth = bds.GetCurrentTrackWidth();
-    }
-
-    if( bds.UseNetClassVia() && netClass != NULL )   // netclass value
-    {
-        m_viaDiameter = netClass->GetViaDiameter();
-        m_viaDrill = netClass->GetViaDrill();
-    }
-    else
-    {
-        m_viaDiameter = bds.GetCurrentViaSize();
-        m_viaDrill = bds.GetCurrentViaDrill();
-    }
-
-    m_layerPairs.clear();
-}
-
-
 void PNS_SIZES_SETTINGS::ClearLayerPairs()
 {
     m_layerPairs.clear();
@@ -138,14 +80,6 @@ void PNS_SIZES_SETTINGS::AddLayerPair( int aL1, int aL2 )
 
     m_layerPairs[bottom] = top;
     m_layerPairs[top] = bottom;
-}
-
-
-void PNS_SIZES_SETTINGS::ImportCurrent( BOARD_DESIGN_SETTINGS& aSettings )
-{
-    m_trackWidth = aSettings.GetCurrentTrackWidth();
-    m_viaDiameter = aSettings.GetCurrentViaSize();
-    m_viaDrill = aSettings.GetCurrentViaDrill();
 }
 
 

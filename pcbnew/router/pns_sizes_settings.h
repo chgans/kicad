@@ -26,8 +26,6 @@
 
 #include "../class_track.h" // for VIATYPE_T
 
-class BOARD;
-class BOARD_DESIGN_SETTINGS;
 class PNS_ITEM;
 
 class PNS_SIZES_SETTINGS {
@@ -42,12 +40,9 @@ public:
         m_viaDrill( 250000 ),
         m_diffPairViaGapSameAsTraceGap( true ),
         m_viaType( VIA_THROUGH )
-    {};
+    {}
 
-    ~PNS_SIZES_SETTINGS() {};
-
-    void Init( BOARD* aBoard, PNS_ITEM* aStartItem = NULL, int aNet = -1 );
-    void ImportCurrent( BOARD_DESIGN_SETTINGS& aSettings );
+    ~PNS_SIZES_SETTINGS() {}
 
     void ClearLayerPairs();
     void AddLayerPair( int aL1, int aL2 );
@@ -92,9 +87,10 @@ public:
     void SetViaType( VIATYPE_T aViaType ) { m_viaType = aViaType; }
     VIATYPE_T ViaType() const { return m_viaType; }
 
+    static int inheritedTrackWidth( const PNS_ITEM* aItem );
+
 private:
 
-    int inheritTrackWidth( PNS_ITEM* aItem );
 
     int m_trackWidth;
     int m_diffPairWidth;

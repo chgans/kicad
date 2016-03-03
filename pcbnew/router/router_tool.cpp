@@ -233,12 +233,12 @@ private:
 
 ROUTER_TOOL::~ROUTER_TOOL()
 {
-    m_savedSettings.Save( GetSettings() );
+    SavePNSSettings( GetSettings() );
 }
 
 bool ROUTER_TOOL::Init()
 {
-    m_savedSettings.Load( GetSettings() );
+    LoadPNSSettings( GetSettings() );
     return true;
 }
 
@@ -338,11 +338,10 @@ void ROUTER_TOOL::handleCommonEvents( const TOOL_EVENT& aEvent )
     {
 
         PNS_SIZES_SETTINGS sizes( m_router->Sizes() );
-        sizes.ImportCurrent( m_board->GetDesignSettings() );
+        importCurrentSizeSettings( sizes, m_board->GetDesignSettings() );
         m_router->UpdateSizes( sizes );
     }
 }
-
 
 int ROUTER_TOOL::getStartLayer( const PNS_ITEM* aItem )
 {
@@ -507,8 +506,7 @@ bool ROUTER_TOOL::prepareInteractive()
     m_ctls->SetAutoPan( true );
 
     PNS_SIZES_SETTINGS sizes( m_router->Sizes() );
-
-    sizes.Init( m_board, m_startItem );
+    initSizeSettings( sizes, m_board, m_startItem );
     sizes.AddLayerPair( m_frame->GetScreen()->m_Route_Layer_TOP,
                         m_frame->GetScreen()->m_Route_Layer_BOTTOM );
     m_router->UpdateSizes( sizes );
@@ -541,6 +539,63 @@ bool ROUTER_TOOL::finishInteractive()
     highlightNet( false );
 
     return true;
+}
+
+void ROUTER_TOOL::initSizeSettings(PNS_SIZES_SETTINGS &aPNSSettings, const BOARD *aBoard, const PNS_ITEM *aStartItem, int aNet)
+{
+    BOARD_DESIGN_SETTINGS &bds = aBoard->GetDesignSettings();
+
+    NETCLASSPTR netClass;
+    int net = aNet;
+
+    if( aStartItem )
+        net = aStartItem->Net();
+
+    if( net >= 0 )
+    {
+        NETINFO_ITEM* ni = aBoard->FindNet( net );
+
+        if( ni )
+        {
+            wxString netClassName = ni->GetClassName();
+            netClass = bds.m_NetClasses.Find( netClassName );
+        }
+    }
+
+    if( !netClass )
+        netClass = bds.GetDefault();
+
+    int trackWidth = 0;
+
+    if( bds.m_UseConnectedTrackWidth && aStartItem != NULL )
+    {
+        trackWidth = PNS_SIZES_SETTINGS::inheritedTrackWidth( aStartItem );
+    }
+
+    if( !trackWidth && ( bds.UseNetClassTrack() && netClass != NULL ) ) // netclass value
+    {
+        trackWidth = netClass->GetTrackWidth();
+    }
+
+    if( !trackWidth )
+    {
+        trackWidth = bds.GetCurrentTrackWidth();
+    }
+
+    aPNSSettings.SetTrackWidth( trackWidth );
+
+    if( bds.UseNetClassVia() && netClass != NULL )   // netclass value
+    {
+        aPNSSettings.SetViaDiameter( netClass->GetViaDiameter() );
+        aPNSSettings.SetViaDrill( netClass->GetViaDrill() );
+    }
+    else
+    {
+        aPNSSettings.SetViaDiameter( bds.GetCurrentViaSize() );
+        aPNSSettings.SetViaDrill( bds.GetCurrentViaDrill() );
+    }
+
+    aPNSSettings.ClearLayerPairs();
 }
 
 
@@ -847,3 +902,9 @@ int ROUTER_TOOL::InlineDrag( const TOOL_EVENT& aEvent )
     return 0;
 }
 
+void ROUTER_TOOL::importCurrentSizeSettings( PNS_SIZES_SETTINGS &aPNSSettings, const BOARD_DESIGN_SETTINGS &aBoardSettings )
+{
+    aPNSSettings.SetTrackWidth( aBoardSettings.GetCurrentTrackWidth() );
+    aPNSSettings.SetViaDiameter( aBoardSettings.GetCurrentViaSize() );
+    aPNSSettings.SetViaDrill( aBoardSettings.GetCurrentViaDrill() );
+}

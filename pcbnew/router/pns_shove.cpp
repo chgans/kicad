@@ -1005,11 +1005,12 @@ PNS_SHOVE::SHOVE_STATUS PNS_SHOVE::shoveMainLoop()
            m_currentNode->JointCount() );
 
     int iterLimit = Settings().ShoveIterationLimit();
-    TIME_LIMIT timeLimit = Settings().ShoveTimeLimit();
+    int timeLimit = Settings().ShoveTimeLimit();
+    TIME_LIMIT timer(timeLimit);
 
     m_iter = 0;
 
-    timeLimit.Restart();
+    timer.Restart();
 
     while( !m_lineStack.empty() )
     {
@@ -1017,7 +1018,7 @@ PNS_SHOVE::SHOVE_STATUS PNS_SHOVE::shoveMainLoop()
 
         m_iter++;
 
-        if( st == SH_INCOMPLETE || timeLimit.Expired() || m_iter >= iterLimit )
+        if( st == SH_INCOMPLETE || timer.Expired() || m_iter >= iterLimit )
         {
             st = SH_INCOMPLETE;
             break;

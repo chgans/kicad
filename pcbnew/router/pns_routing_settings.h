@@ -23,10 +23,7 @@
 
 #include <cstdio>
 
-#include "time_limit.h"
-
 class DIRECTION_45;
-class TOOL_SETTINGS;
 
 ///> Routing modes
 enum PNS_MODE
@@ -56,9 +53,6 @@ class PNS_ROUTING_SETTINGS
 public:
     PNS_ROUTING_SETTINGS();
 
-    void Load( const TOOL_SETTINGS& where );
-    void Save( TOOL_SETTINGS& where ) const;
-
     ///> Returns the routing mode.
     PNS_MODE Mode() const { return m_routingMode; }
 
@@ -84,7 +78,7 @@ public:
     void SetRemoveLoops( bool aRemoveLoops ) { m_removeLoops = aRemoveLoops; }
 
     ///> Returns true if suggesting the finish of currently placed track is on.
-    bool SuggestFinish() { return m_suggestFinish; }
+    bool SuggestFinish() const { return m_suggestFinish; }
 
     ///> Enables displaying suggestions for finishing the currently placed track.
     void SetSuggestFinish( bool aSuggestFinish ) { m_suggestFinish = aSuggestFinish; }
@@ -114,21 +108,28 @@ public:
     void SetJumpOverObstacles( bool aJumpOverObstacles ) { m_jumpOverObstacles = aJumpOverObstacles; }
 
     void SetStartDiagonal( bool aStartDiagonal ) { m_startDiagonal = aStartDiagonal; }
+    bool StartDiagonal() const { return m_startDiagonal; }
 
     bool CanViolateDRC() const { return m_canViolateDRC; }
     void SetCanViolateDRC( bool aViolate ) { m_canViolateDRC = aViolate; }
 
-    bool GetFreeAngleMode() const { return m_freeAngleMode; }
+    bool FreeAngleMode() const { return m_freeAngleMode; }
 
     void SetFreeAngleMode( bool aEnable ) { m_freeAngleMode = aEnable; }
 
     const DIRECTION_45 InitialDirection() const;
 
+    void SetShoveIterationLimit(int aLimit);
     int ShoveIterationLimit() const;
-    TIME_LIMIT ShoveTimeLimit() const;
 
-    int WalkaroundIterationLimit() const { return m_walkaroundIterationLimit; };
-    TIME_LIMIT WalkaroundTimeLimit() const;
+    void SetShoveTimeLimit(int aLimitMs);
+    int ShoveTimeLimit() const;
+
+    void SetWalkaroundIterationLimit(int aLimit);
+    int WalkaroundIterationLimit() const { return m_walkaroundIterationLimit; }
+
+    void SetWalkaroundTimeLimit(int aLimitMs);
+    int WalkaroundTimeLimit() const;
 
     void SetInlineDragEnabled ( bool aEnable ) { m_inlineDragEnabled = aEnable; }
     bool InlineDragEnabled( ) const { return m_inlineDragEnabled; }
@@ -151,8 +152,8 @@ private:
 
     int m_walkaroundIterationLimit;
     int m_shoveIterationLimit;
-    TIME_LIMIT m_shoveTimeLimit;
-    TIME_LIMIT m_walkaroundTimeLimit;
+    int m_shoveTimeLimit;
+    int m_walkaroundTimeLimit;
 };
 
 #endif

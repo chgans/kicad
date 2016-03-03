@@ -24,6 +24,8 @@
 
 #include "pns_tool_base.h"
 
+class BOARD_DESIGN_SETTINGS;
+
 class APIEXPORT ROUTER_TOOL : public PNS_TOOL_BASE
 {
 public:
@@ -58,6 +60,9 @@ private:
 
     bool prepareInteractive();
     bool finishInteractive();
+
+    void initSizeSettings(PNS_SIZES_SETTINGS &aPNSSettings, const BOARD* aBoard, const PNS_ITEM* aStartItem, int aNet = -1 );
+    void importCurrentSizeSettings( PNS_SIZES_SETTINGS &aPNSSettings, const BOARD_DESIGN_SETTINGS &aBoardSettings );
 };
 
 #endif
