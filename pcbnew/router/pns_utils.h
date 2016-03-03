@@ -52,11 +52,6 @@ const SHAPE_LINE_CHAIN ConvexHull( const SHAPE_CONVEX& convex, int aClearance );
 
 SHAPE_RECT ApproximateSegmentAsRect( const SHAPE_SEGMENT& aSeg );
 
-void DrawDebugPoint( VECTOR2I aP, int aColor );
-void DrawDebugBox( BOX2I aB, int aColor );
-void DrawDebugSeg( SEG aS, int aColor );
-void DrawDebugDirs( VECTOR2D aP, int aMask, int aColor );
-
 OPT_BOX2I ChangedArea( const PNS_ITEM* aItemA, const PNS_ITEM* aItemB );
 
 #endif    // __PNS_UTILS_H

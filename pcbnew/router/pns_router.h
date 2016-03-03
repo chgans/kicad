@@ -87,12 +87,10 @@ private:
 
 public:
     PNS_ROUTER();
-    ~PNS_ROUTER();
+    virtual ~PNS_ROUTER();
 
     void SetMode ( PNS_ROUTER_MODE aMode );
     PNS_ROUTER_MODE Mode() const { return m_mode; }
-
-    static PNS_ROUTER* GetInstance();
 
     void ClearWorld();
     void SetBoard( BOARD* aBoard );
@@ -221,6 +219,14 @@ public:
         m_gridHelper = aGridHelper;
     }
 
+    virtual int DpCoupledNet( int aNet );
+    virtual int DpNetPolarity( int aNet );
+
+    virtual void DrawDebugPoint( VECTOR2I aP, int aColor );
+    virtual void DrawDebugBox( BOX2I aB, int aColor );
+    virtual void DrawDebugSeg( SEG aS, int aColor );
+    virtual void DrawDebugDirs( VECTOR2D aP, int aMask, int aColor );
+
 private:
     void movePlacing( const VECTOR2I& aP, PNS_ITEM* aItem );
     void moveDragging( const VECTOR2I& aP, PNS_ITEM* aItem );
@@ -229,6 +235,8 @@ private:
     void updateView( PNS_NODE* aNode, PNS_ITEMSET& aCurrent );
 
     void clearViewFlags();
+
+    int MatchDpSuffix( wxString aNetName, wxString& aComplementNet, wxString& aBaseDpName );
 
     // optHoverItem queryHoverItemEx(const VECTOR2I& aP);
 

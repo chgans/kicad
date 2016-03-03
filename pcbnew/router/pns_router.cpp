@@ -61,10 +61,6 @@
 #include <ratsnest_data.h>
 #include <layers_id_colors_and_visibility.h>
 
-// an ugly singleton for drawing debug items within the router context.
-// To be fixed sometime in the future.
-static PNS_ROUTER* theRouter;
-
 
 PNS_PCBNEW_CLEARANCE_FUNC::PNS_PCBNEW_CLEARANCE_FUNC( PNS_ROUTER* aRouter ) :
     m_router( aRouter )
@@ -72,7 +68,7 @@ PNS_PCBNEW_CLEARANCE_FUNC::PNS_PCBNEW_CLEARANCE_FUNC( PNS_ROUTER* aRouter ) :
     BOARD* brd = m_router->GetBoard();
     PNS_NODE* world = m_router->GetWorld();
 
-    PNS_TOPOLOGY topo( world );
+    PNS_TOPOLOGY topo( m_router, world );
     m_clearanceCache.resize( brd->GetNetCount() );
     m_useDpGap = false;
 
@@ -83,7 +79,7 @@ PNS_PCBNEW_CLEARANCE_FUNC::PNS_PCBNEW_CLEARANCE_FUNC( PNS_ROUTER* aRouter ) :
             continue;
 
         CLEARANCE_ENT ent;
-        ent.coupledNet = topo.DpCoupledNet( i );
+        ent.coupledNet = m_router->DpCoupledNet( i );
 
         wxString netClassName = ni->GetClassName();
         NETCLASSPTR nc = brd->GetDesignSettings().m_NetClasses.Find( netClassName );
@@ -439,7 +435,6 @@ void PNS_ROUTER::SyncWorld()
 
 PNS_ROUTER::PNS_ROUTER()
 {
-    theRouter = this;
 
     m_clearanceFunc = NULL;
 
@@ -481,16 +476,9 @@ void PNS_ROUTER::SetView( KIGFX::VIEW* aView )
 }
 
 
-PNS_ROUTER* PNS_ROUTER::GetInstance()
-{
-    return theRouter;
-}
-
-
 PNS_ROUTER::~PNS_ROUTER()
 {
     ClearWorld();
-    theRouter = NULL;
 
     if( m_previewItems )
         delete m_previewItems;
@@ -655,6 +643,90 @@ BOARD* PNS_ROUTER::GetBoard()
     return m_board;
 }
 
+int PNS_ROUTER::DpCoupledNet(int aNet)
+{
+    wxString refName = m_board->FindNet( aNet )->GetNetname();
+    wxString dummy, coupledNetName;
+
+    if( MatchDpSuffix( refName, coupledNetName, dummy ) )
+    {
+        NETINFO_ITEM* net = m_board->FindNet( coupledNetName );
+
+        if( !net )
+            return -1;
+
+        return net->GetNet();
+
+    }
+
+    return -1;
+}
+
+int PNS_ROUTER::DpNetPolarity(int aNet)
+{
+    wxString refName = m_board->FindNet( aNet )->GetNetname();
+    wxString dummy1, dummy2;
+
+    return MatchDpSuffix( refName, dummy1, dummy2 );
+}
+
+void PNS_ROUTER::DrawDebugPoint(VECTOR2I aP, int aColor)
+{
+    SHAPE_LINE_CHAIN l;
+
+    l.Append( aP - VECTOR2I( -50000, -50000 ) );
+    l.Append( aP + VECTOR2I( -50000, -50000 ) );
+
+    DisplayDebugLine ( l, aColor, 10000 );
+
+    l.Clear();
+    l.Append( aP - VECTOR2I( 50000, -50000 ) );
+    l.Append( aP + VECTOR2I( 50000, -50000 ) );
+
+    DisplayDebugLine( l, aColor, 10000 );
+}
+
+void PNS_ROUTER::DrawDebugBox(BOX2I aB, int aColor)
+{
+    SHAPE_LINE_CHAIN l;
+
+    VECTOR2I o = aB.GetOrigin();
+    VECTOR2I s = aB.GetSize();
+
+    l.Append( o );
+    l.Append( o.x + s.x, o.y );
+    l.Append( o.x + s.x, o.y + s.y );
+    l.Append( o.x, o.y + s.y );
+    l.Append( o );
+
+    DisplayDebugLine( l, aColor, 10000 );
+}
+
+void PNS_ROUTER::DrawDebugSeg(SEG aS, int aColor)
+{
+    SHAPE_LINE_CHAIN l;
+
+    l.Append( aS.A );
+    l.Append( aS.B );
+
+    DisplayDebugLine( l, aColor, 10000 );
+}
+
+void PNS_ROUTER::DrawDebugDirs(VECTOR2D aP, int aMask, int aColor)
+{
+    BOX2I b( aP - VECTOR2I( 10000, 10000 ), VECTOR2I( 20000, 20000 ) );
+
+    DrawDebugBox( b, aColor );
+    for( int i = 0; i < 8; i++ )
+    {
+        if( ( 1 << i ) & aMask )
+        {
+            VECTOR2I v = DIRECTION_45( ( DIRECTION_45::Directions ) i ).ToVector() * 100000;
+            DrawDebugSeg( SEG( aP, aP + v ), aColor );
+        }
+    }
+}
+
 
 void PNS_ROUTER::eraseView()
 {
@@ -813,6 +885,40 @@ void PNS_ROUTER::updateView( PNS_NODE* aNode, PNS_ITEMSET& aCurrent )
             parent->ViewUpdate( KIGFX::VIEW_ITEM::APPEARANCE );
         }
     }
+}
+
+int PNS_ROUTER::MatchDpSuffix(wxString aNetName, wxString &aComplementNet, wxString &aBaseDpName)
+{
+    int rv = 0;
+
+    if( aNetName.EndsWith( "+" ) )
+    {
+        aComplementNet = "-";
+        rv = 1;
+    }
+    else if( aNetName.EndsWith( "_P" ) )
+    {
+        aComplementNet = "_N";
+        rv = 1;
+    }
+    else if( aNetName.EndsWith( "-" ) )
+    {
+        aComplementNet = "+";
+        rv = -1;
+    }
+    else if( aNetName.EndsWith( "_N" ) )
+    {
+        aComplementNet = "_P";
+        rv = -1;
+    }
+
+    if( rv != 0 )
+    {
+        aBaseDpName = aNetName.Left( aNetName.Length() - aComplementNet.Length() );
+        aComplementNet = aBaseDpName + aComplementNet;
+    }
+
+    return rv;
 }
 
 

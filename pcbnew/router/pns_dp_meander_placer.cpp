@@ -88,7 +88,7 @@ bool PNS_DP_MEANDER_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
 
     m_world = Router()->GetWorld()->Branch();
 
-    PNS_TOPOLOGY topo( m_world );
+    PNS_TOPOLOGY topo( Router(), m_world );
 
     if( !topo.AssembleDiffPair( m_initialSegment, m_originPair ) )
     {
@@ -158,7 +158,7 @@ static bool pairOrientation( const PNS_DIFF_PAIR::COUPLED_SEGMENTS& aPair )
 {
     VECTOR2I midp = ( aPair.coupledP.A + aPair.coupledN.A ) / 2;
 
-    //DrawDebugPoint (midp, 6);
+    //Router()->DrawDebugPoint (midp, 6);
 
     return aPair.coupledP.Side( midp ) > 0;
 }
@@ -224,7 +224,7 @@ bool PNS_DP_MEANDER_PLACER::Move( const VECTOR2I& aP, PNS_ITEM* aEndItem )
     {
         SEG base = baselineSegment( sp );
 
-        DrawDebugSeg( base, 3 );
+        Router()->DrawDebugSeg( base, 3 );
 
         while( sp.indexP >= curIndexP )
         {

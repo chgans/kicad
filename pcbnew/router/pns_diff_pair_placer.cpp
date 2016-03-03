@@ -770,7 +770,7 @@ bool PNS_DIFF_PAIR_PLACER::FixRoute( const VECTOR2I& aP, PNS_ITEM* aEndItem )
     if( m_currentTrace.CP().SegmentCount() > 1 )
         m_initialDiagonal = !DIRECTION_45( m_currentTrace.CP().CSegment( -2 ) ).IsDiagonal();
 
-    PNS_TOPOLOGY topo( m_lastNode );
+    PNS_TOPOLOGY topo( Router(), m_lastNode );
 
     if( !m_snapOnTarget && !m_currentTrace.EndsWithVias() )
     {
@@ -836,7 +836,7 @@ void PNS_DIFF_PAIR_PLACER::GetModifiedNets( std::vector<int> &aNets ) const
 void PNS_DIFF_PAIR_PLACER::updateLeadingRatLine()
 {
     SHAPE_LINE_CHAIN ratLineN, ratLineP;
-    PNS_TOPOLOGY topo( m_lastNode );
+    PNS_TOPOLOGY topo( Router(), m_lastNode );
 
     if( topo.LeadingRatLine( &m_currentTrace.PLine(), ratLineP ) )
     {

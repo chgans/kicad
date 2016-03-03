@@ -424,7 +424,7 @@ PNS_SHOVE::SHOVE_STATUS PNS_SHOVE::onCollidingSolid( PNS_LINE& aCurrent, PNS_ITE
             return onCollidingVia( aObstacle, via );
     }
 
-    PNS_TOPOLOGY topo( m_currentNode );
+    PNS_TOPOLOGY topo( Router(), m_currentNode );
 
     std::set<PNS_ITEM*> cluster = topo.AssembleCluster( aObstacle, aCurrent.Layers().Start() );
 

@@ -162,67 +162,6 @@ SHAPE_RECT ApproximateSegmentAsRect( const SHAPE_SEGMENT& aSeg )
 }
 
 
-void DrawDebugPoint( VECTOR2I aP, int aColor )
-{
-    SHAPE_LINE_CHAIN l;
-
-    l.Append( aP - VECTOR2I( -50000, -50000 ) );
-    l.Append( aP + VECTOR2I( -50000, -50000 ) );
-
-    PNS_ROUTER::GetInstance()->DisplayDebugLine ( l, aColor, 10000 );
-
-    l.Clear();
-    l.Append( aP - VECTOR2I( 50000, -50000 ) );
-    l.Append( aP + VECTOR2I( 50000, -50000 ) );
-
-    PNS_ROUTER::GetInstance()->DisplayDebugLine( l, aColor, 10000 );
-}
-
-
-void DrawDebugBox( BOX2I aB, int aColor )
-{
-    SHAPE_LINE_CHAIN l;
-
-    VECTOR2I o = aB.GetOrigin();
-    VECTOR2I s = aB.GetSize();
-
-    l.Append( o );
-    l.Append( o.x + s.x, o.y );
-    l.Append( o.x + s.x, o.y + s.y );
-    l.Append( o.x, o.y + s.y );
-    l.Append( o );
-
-    PNS_ROUTER::GetInstance()->DisplayDebugLine( l, aColor, 10000 );
-}
-
-
-void DrawDebugSeg( SEG aS, int aColor )
-{
-    SHAPE_LINE_CHAIN l;
-
-    l.Append( aS.A );
-    l.Append( aS.B );
-
-    PNS_ROUTER::GetInstance()->DisplayDebugLine( l, aColor, 10000 );
-}
-
-
-void DrawDebugDirs( VECTOR2D aP, int aMask, int aColor )
-{
-    BOX2I b( aP - VECTOR2I( 10000, 10000 ), VECTOR2I( 20000, 20000 ) );
-
-    DrawDebugBox( b, aColor );
-    for( int i = 0; i < 8; i++ )
-    {
-        if( ( 1 << i ) & aMask )
-        {
-            VECTOR2I v = DIRECTION_45( ( DIRECTION_45::Directions ) i ).ToVector() * 100000;
-            DrawDebugSeg( SEG( aP, aP + v ), aColor );
-        }
-    }
-}
-
-
 OPT_BOX2I ChangedArea( const PNS_ITEM* aItemA, const PNS_ITEM* aItemB )
 {
     if( aItemA->OfKind( PNS_ITEM::VIA ) && aItemB->OfKind( PNS_ITEM::VIA ) )

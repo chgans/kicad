@@ -79,7 +79,7 @@ bool PNS_MEANDER_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
     m_world = Router()->GetWorld()->Branch();
     m_originLine = m_world->AssembleLine( m_initialSegment );
 
-    PNS_TOPOLOGY topo( m_world );
+    PNS_TOPOLOGY topo( Router(), m_world );
     m_tunedPath = topo.AssembleTrivialPath( m_initialSegment );
 
     m_world->Remove( &m_originLine );

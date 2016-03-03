@@ -32,16 +32,17 @@ class PNS_JOINT;
 class PNS_ITEM;
 class PNS_SOLID;
 class PNS_DIFF_PAIR;
+class PNS_ROUTER;
 
 class PNS_TOPOLOGY
 {
 public:
     typedef std::set<PNS_JOINT*> JOINT_SET;
 
-    PNS_TOPOLOGY( PNS_NODE* aNode ):
-        m_world( aNode ) {};
+    PNS_TOPOLOGY( PNS_ROUTER *aRouter, PNS_NODE* aNode ):
+        m_router(aRouter), m_world( aNode ) {}
 
-    ~PNS_TOPOLOGY() {};
+    ~PNS_TOPOLOGY() {}
 
     bool SimplifyLine( PNS_LINE *aLine );
     PNS_ITEM* NearestUnconnectedItem( PNS_JOINT* aStart, int* aAnchor = NULL, int aKindMask = PNS_ITEM::ANY );
@@ -55,9 +56,6 @@ public:
     const PNS_ITEMSET AssembleTrivialPath( PNS_SEGMENT* aStart );
     const PNS_DIFF_PAIR AssembleDiffPair( PNS_SEGMENT* aStart );
 
-    int MatchDpSuffix( wxString aNetName, wxString& aComplementNet, wxString& aBaseDpName );
-    int DpCoupledNet( int aNet );
-    int DpNetPolarity( int aNet );
     const PNS_LINE DpCoupledLine( PNS_LINE* aLine );
     bool AssembleDiffPair( PNS_ITEM* aStart, PNS_DIFF_PAIR& aPair );
 
@@ -66,6 +64,7 @@ public:
 private:
     bool followTrivialPath( PNS_LINE* aLine, bool aLeft, PNS_ITEMSET& aSet, std::set<PNS_ITEM*>& aVisited );
 
+    PNS_ROUTER *m_router;
     PNS_NODE *m_world;
 };
 

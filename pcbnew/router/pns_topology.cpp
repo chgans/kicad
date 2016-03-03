@@ -29,8 +29,6 @@
 #include "pns_diff_pair.h"
 #include "pns_topology.h"
 
-#include <class_board.h>
-
 bool PNS_TOPOLOGY::SimplifyLine( PNS_LINE* aLine )
 {
     if( !aLine->LinkedSegments() || !aLine->SegmentCount() )
@@ -114,7 +112,7 @@ bool PNS_TOPOLOGY::LeadingRatLine( const PNS_LINE* aTrack, SHAPE_LINE_CHAIN& aRa
     {
         int anchor;
 
-        PNS_TOPOLOGY topo( tmpNode.get() );
+        PNS_TOPOLOGY topo( m_router, tmpNode.get() );
         PNS_ITEM* it = topo.NearestUnconnectedItem( jt, &anchor );
 
         if( !it )
@@ -258,81 +256,13 @@ const PNS_ITEMSET PNS_TOPOLOGY::ConnectedItems( PNS_ITEM* aStart, int aKindMask 
 }
 
 
-int PNS_TOPOLOGY::MatchDpSuffix( wxString aNetName, wxString& aComplementNet, wxString& aBaseDpName )
-{
-    int rv = 0;
-
-    if( aNetName.EndsWith( "+" ) )
-    {
-        aComplementNet = "-";
-        rv = 1;
-    }
-    else if( aNetName.EndsWith( "_P" ) )
-    {
-        aComplementNet = "_N";
-        rv = 1;
-    }
-    else if( aNetName.EndsWith( "-" ) )
-    {
-        aComplementNet = "+";
-        rv = -1;
-    }
-    else if( aNetName.EndsWith( "_N" ) )
-    {
-        aComplementNet = "_P";
-        rv = -1;
-    }
-
-    if( rv != 0 )
-    {
-        aBaseDpName = aNetName.Left( aNetName.Length() - aComplementNet.Length() );
-        aComplementNet = aBaseDpName + aComplementNet;
-    }
-
-    return rv;
-}
-
-
-int PNS_TOPOLOGY::DpCoupledNet( int aNet )
-{
-    BOARD* brd = PNS_ROUTER::GetInstance()->GetBoard();
-
-    wxString refName = brd->FindNet( aNet )->GetNetname();
-    wxString dummy, coupledNetName;
-
-    if( MatchDpSuffix( refName, coupledNetName, dummy ) )
-    {
-        NETINFO_ITEM* net = brd->FindNet( coupledNetName );
-
-        if( !net )
-            return -1;
-
-        return net->GetNet();
-
-    }
-
-    return -1;
-}
-
-
-int PNS_TOPOLOGY::DpNetPolarity( int aNet )
-{
-    BOARD* brd = PNS_ROUTER::GetInstance()->GetBoard();
-
-    wxString refName = brd->FindNet( aNet )->GetNetname();
-    wxString dummy1, dummy2;
-
-    return MatchDpSuffix( refName, dummy1, dummy2 );
-}
-
-
 bool commonParallelProjection( SEG n, SEG p, SEG &pClip, SEG& nClip );
 
 
 bool PNS_TOPOLOGY::AssembleDiffPair( PNS_ITEM* aStart, PNS_DIFF_PAIR& aPair )
 {
     int refNet = aStart->Net();
-    int coupledNet = DpCoupledNet( refNet );
+    int coupledNet = m_router->DpCoupledNet( refNet );
 
     if( coupledNet < 0 )
         return false;
@@ -378,7 +308,7 @@ bool PNS_TOPOLOGY::AssembleDiffPair( PNS_ITEM* aStart, PNS_DIFF_PAIR& aPair )
     PNS_LINE lp = m_world->AssembleLine( refSeg );
     PNS_LINE ln = m_world->AssembleLine( coupledSeg );
 
-    if( DpNetPolarity( refNet ) < 0 )
+    if( m_router->DpNetPolarity( refNet ) < 0 )
     {
         std::swap( lp, ln );
     }
