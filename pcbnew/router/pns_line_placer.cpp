@@ -31,7 +31,6 @@
 #include "pns_router.h"
 #include "pns_topology.h"
 
-#include <class_board_item.h>
 
 using boost::optional;
 
