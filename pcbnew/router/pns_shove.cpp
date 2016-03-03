@@ -43,8 +43,6 @@
 
 #include "time_limit.h"
 
-#include <profile.h>
-
 void PNS_SHOVE::replaceItems( PNS_ITEM* aOld, PNS_ITEM* aNew )
 {
     OPT_BOX2I changed_area = ChangedArea( aOld, aNew );
