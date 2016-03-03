@@ -47,9 +47,10 @@ bool PNS_MEANDER_SKEW_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
 {
     VECTOR2I p;
 
+    ClearFailureReason();
     if( !aStartItem || !aStartItem->OfKind( PNS_ITEM::SEGMENT ) )
     {
-        Router()->SetFailureReason( _( "Please select a differential pair trace you want to tune." ) );
+        SetFailureReason( _( "Please select a differential pair trace you want to tune." ) );
         return false;
     }
 
@@ -68,9 +69,9 @@ bool PNS_MEANDER_SKEW_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
 
     if( !topo.AssembleDiffPair ( m_initialSegment, m_originPair ) )
     {
-        Router()->SetFailureReason( _( "Unable to find complementary differential pair "
-                                       "net for skew tuning. Make sure the names of the nets belonging "
-                                       "to a differential pair end with either _N/_P or +/-." ) );
+        SetFailureReason( _( "Unable to find complementary differential pair "
+                             "net for skew tuning. Make sure the names of the nets belonging "
+                             "to a differential pair end with either _N/_P or +/-." ) );
         return false;
     }
 
@@ -127,6 +128,7 @@ int PNS_MEANDER_SKEW_PLACER::currentSkew() const
 
 bool PNS_MEANDER_SKEW_PLACER::Move( const VECTOR2I& aP, PNS_ITEM* aEndItem )
 {
+    ClearFailureReason();
 	BOOST_FOREACH( const PNS_ITEM* item, m_tunedPathP.CItems() )
     {
         if( const PNS_LINE* l = dyn_cast<const PNS_LINE*>( item ) )

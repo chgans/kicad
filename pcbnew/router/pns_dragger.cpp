@@ -107,6 +107,7 @@ bool PNS_DRAGGER::startDragVia( const VECTOR2D& aP, PNS_VIA* aVia )
 
 bool PNS_DRAGGER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
 {
+    ClearFailureReason();
     m_shove = new PNS_SHOVE( m_world, Router() );
     m_lastNode = NULL;
     m_draggedItems.Clear();
@@ -287,6 +288,7 @@ bool PNS_DRAGGER::dragShove( const VECTOR2I& aP )
 
 bool PNS_DRAGGER::FixRoute()
 {
+    ClearFailureReason();
     if( m_dragStatus )
     {
         Router()->CommitRouting( CurrentNode() );
@@ -299,6 +301,7 @@ bool PNS_DRAGGER::FixRoute()
 
 bool PNS_DRAGGER::Drag( const VECTOR2I& aP )
 {
+    ClearFailureReason();
     switch( m_currentMode )
     {
     case RM_MarkObstacles:

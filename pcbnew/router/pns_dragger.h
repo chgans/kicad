@@ -77,6 +77,16 @@ public:
     bool FixRoute();
 
     /**
+      * Function FailureReason()
+      *
+      * Returns a text message explaining why Start(), Drag() or FixRoute() failed.
+      */
+    wxString FailureReason() const
+    {
+        return m_failureReason;
+    }
+
+    /**
      * Function CurrentNode()
      *
      * Returns the most recent world state, including all
@@ -93,6 +103,18 @@ public:
 
     /// @copydoc PNS_ALGO_BASE::Logger()
     virtual PNS_LOGGER* Logger();
+
+
+protected:
+    void SetFailureReason(const wxString &aReason)
+    {
+        m_failureReason = aReason;
+    }
+
+    void ClearFailureReason()
+    {
+        m_failureReason.Clear();
+    }
 
 private:
     enum DragMode {
@@ -120,6 +142,7 @@ private:
     PNS_ITEMSET m_origViaConnections;
     PNS_VIA*    m_initialVia;
     PNS_ITEMSET m_draggedItems;
+    wxString m_failureReason;
 };
 
 #endif

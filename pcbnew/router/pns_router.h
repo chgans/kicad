@@ -86,10 +86,6 @@ public:
     // Algo results
     virtual void CommitRouting( PNS_NODE* aNode ) = 0;
 
-    // Error management
-    virtual void SetFailureReason ( const wxString& aReason ) = 0;
-    virtual const wxString& FailureReason() const = 0;
-
     // Snapping
     virtual bool SnappingEnabled() const = 0;
     virtual const VECTOR2I SnapToItem( PNS_ITEM* aItem, VECTOR2I aP, bool& aSplitsSegment ) = 0;
@@ -235,6 +231,9 @@ public:
         m_gridHelper = aGridHelper;
     }
 
+    // Error management
+    void SetFailureReason ( const wxString& aReason );
+    const wxString& FailureReason() const;
 
     /*
      * PNS_ROUTER_IFACE implementation
@@ -245,10 +244,6 @@ public:
 
     // Algo results
     virtual void CommitRouting( PNS_NODE* aNode );
-
-    // Error management
-    virtual void SetFailureReason ( const wxString& aReason );
-    virtual const wxString& FailureReason() const;
 
     // Snapping
     virtual bool SnappingEnabled() const;

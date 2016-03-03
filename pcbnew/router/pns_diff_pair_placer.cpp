@@ -509,6 +509,8 @@ bool PNS_DIFF_PAIR_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
 {
     VECTOR2I p( aP );
 
+    ClearFailureReason();
+
     bool split;
 
     if( Router()->SnappingEnabled() )
@@ -516,8 +518,8 @@ bool PNS_DIFF_PAIR_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
 
     if( !aStartItem )
     {
-        Router()->SetFailureReason( _( "Can't start a differential pair "
-                                       " in the middle of nowhere." ) );
+        SetFailureReason( _( "Can't start a differential pair "
+                             " in the middle of nowhere." ) );
         return false;
     }
 
@@ -525,9 +527,9 @@ bool PNS_DIFF_PAIR_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
 
     if( !findDpPrimitivePair( aP, aStartItem, m_start ) )
     {
-        Router()->SetFailureReason( _( "Unable to find complementary differential pair "
-                                       "net. Make sure the names of the nets belonging "
-                                       "to a differential pair end with either _N/_P or +/-." ) );
+        SetFailureReason( _( "Unable to find complementary differential pair "
+                             "net. Make sure the names of the nets belonging "
+                             "to a differential pair end with either _N/_P or +/-." ) );
         return false;
     }
 
@@ -538,14 +540,14 @@ bool PNS_DIFF_PAIR_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
     if (!Router()->ValidateClearanceForNet( clearance, m_netP ) ||
             !Router()->ValidateClearanceForNet( clearance, m_netN ))
     {
-        Router()->SetFailureReason( _( "Current track/via gap setting violates "
-                                       "design rules for this net." ) );
+        SetFailureReason( _( "Current track/via gap setting violates "
+                             "design rules for this net." ) );
         return false;
     }
 
     if( !Router()->ValidateTrackWidth( m_sizes.DiffPairWidth() ) )
     {
-        Router()->SetFailureReason( _( "Current track width setting violates design rules." ) );
+        SetFailureReason( _( "Current track width setting violates design rules." ) );
         return false;
     }
 
@@ -644,6 +646,7 @@ bool PNS_DIFF_PAIR_PLACER::routeHead( const VECTOR2I& aP )
 
 bool PNS_DIFF_PAIR_PLACER::Move( const VECTOR2I& aP , PNS_ITEM* aEndItem )
 {
+    ClearFailureReason();
     m_currentEndItem = aEndItem;
     m_fitOk = false;
 
@@ -679,6 +682,8 @@ void PNS_DIFF_PAIR_PLACER::UpdateSizes( const PNS_SIZES_SETTINGS& aSizes )
 
 bool PNS_DIFF_PAIR_PLACER::FixRoute( const VECTOR2I& aP, PNS_ITEM* aEndItem )
 {
+    ClearFailureReason();
+
     if( !m_fitOk )
         return false;
 

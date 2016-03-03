@@ -660,6 +660,7 @@ bool PNS_ROUTER::StartRouting( const VECTOR2I& aP, PNS_ITEM* aStartItem, int aLa
     m_placer->SetLayer( aLayer );
 
     bool rv = m_placer->Start( aP, aStartItem );
+    SetFailureReason(m_placer->FailureReason());
 
     if( !rv )
         return false;
@@ -874,6 +875,7 @@ void PNS_ROUTER::moveDragging( const VECTOR2I& aP, PNS_ITEM* aEndItem )
     eraseView();
 
     m_dragger->Drag( aP );
+    SetFailureReason(m_dragger->FailureReason());
     PNS_ITEMSET dragged = m_dragger->Traces();
 
     updateView( m_dragger->CurrentNode(), dragged );
@@ -1012,6 +1014,7 @@ void PNS_ROUTER::movePlacing( const VECTOR2I& aP, PNS_ITEM* aEndItem )
     eraseView();
 
     m_placer->Move( aP, aEndItem );
+    SetFailureReason(m_placer->FailureReason());
     PNS_ITEMSET current = m_placer->Traces();
 
     BOOST_FOREACH( const PNS_ITEM* item, current.CItems() )
@@ -1124,10 +1127,12 @@ bool PNS_ROUTER::FixRoute( const VECTOR2I& aP, PNS_ITEM* aEndItem )
     {
     case ROUTE_TRACK:
         rv = m_placer->FixRoute( aP, aEndItem );
+        SetFailureReason(m_placer->FailureReason());
         break;
 
     case DRAG_SEGMENT:
         rv = m_dragger->FixRoute();
+        SetFailureReason(m_dragger->FailureReason());
         break;
 
     default:

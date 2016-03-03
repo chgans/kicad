@@ -70,9 +70,10 @@ bool PNS_DP_MEANDER_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
 {
     VECTOR2I p;
 
+    ClearFailureReason();
     if( !aStartItem || !aStartItem->OfKind( PNS_ITEM::SEGMENT ) )
     {
-        Router()->SetFailureReason( _( "Please select a track whose length you want to tune." ) );
+        SetFailureReason( _( "Please select a track whose length you want to tune." ) );
         return false;
     }
 
@@ -89,9 +90,9 @@ bool PNS_DP_MEANDER_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
 
     if( !topo.AssembleDiffPair( m_initialSegment, m_originPair ) )
     {
-        Router()->SetFailureReason( _( "Unable to find complementary differential pair "
-                                       "net for length tuning. Make sure the names of the nets belonging "
-                                       "to a differential pair end with either _N/_P or +/-." ) );
+        SetFailureReason( _( "Unable to find complementary differential pair "
+                             "net for length tuning. Make sure the names of the nets belonging "
+                             "to a differential pair end with either _N/_P or +/-." ) );
         return false;
     }
 
@@ -163,7 +164,7 @@ static bool pairOrientation( const PNS_DIFF_PAIR::COUPLED_SEGMENTS& aPair )
 
 bool PNS_DP_MEANDER_PLACER::Move( const VECTOR2I& aP, PNS_ITEM* aEndItem )
 {
-//    return false;
+    ClearFailureReason();
 
     PNS_DIFF_PAIR::COUPLED_SEGMENTS_VEC coupledSegments;
 
@@ -303,6 +304,7 @@ bool PNS_DP_MEANDER_PLACER::Move( const VECTOR2I& aP, PNS_ITEM* aEndItem )
 
 bool PNS_DP_MEANDER_PLACER::FixRoute( const VECTOR2I& aP, PNS_ITEM* aEndItem )
 {
+    ClearFailureReason();
     PNS_LINE lP( m_originPair.PLine(), m_finalShapeP );
     PNS_LINE lN( m_originPair.NLine(), m_finalShapeN );
 

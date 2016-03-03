@@ -60,9 +60,10 @@ bool PNS_MEANDER_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
 {
     VECTOR2I p;
 
+    ClearFailureReason();
     if( !aStartItem || !aStartItem->OfKind( PNS_ITEM::SEGMENT ) )
     {
-        Router()->SetFailureReason( _( "Please select a track whose length you want to tune." ) );
+        SetFailureReason( _( "Please select a track whose length you want to tune." ) );
         return false;
     }
 
@@ -105,6 +106,7 @@ int PNS_MEANDER_PLACER::origPathLength() const
 
 bool PNS_MEANDER_PLACER::Move( const VECTOR2I& aP, PNS_ITEM* aEndItem )
 {
+    ClearFailureReason();
     return doMove( aP, aEndItem, m_settings.m_targetLength );
 }
 
@@ -189,6 +191,8 @@ bool PNS_MEANDER_PLACER::doMove( const VECTOR2I& aP, PNS_ITEM* aEndItem, int aTa
 
 bool PNS_MEANDER_PLACER::FixRoute( const VECTOR2I& aP, PNS_ITEM* aEndItem )
 {
+    ClearFailureReason();
+
     if( !m_currentNode )
         return false;
 

@@ -52,6 +52,7 @@ public:
      *
      * Starts placement/drag operation at point aP, taking item aStartItem as anchor
      * (unless NULL).
+     * @return true on success and false in case of failure (use failureReason() for details)
      */
     virtual bool Start( const VECTOR2I& aP, PNS_ITEM* aStartItem ) = 0;
 
@@ -61,6 +62,7 @@ public:
      * Moves the end of the currently routed primtive(s) to the point aP, taking
      * aEndItem as the anchor (if not NULL).
      * (unless NULL).
+     * @return true on success and false in case of failure (use failureReason() for details)
      */
     virtual bool Move( const VECTOR2I& aP, PNS_ITEM* aEndItem ) = 0;
 
@@ -72,8 +74,19 @@ public:
      * @return true, if route has been commited. May return false if the routing
      * result is violating design rules - in such case, the track is only committed
      * if Settings.CanViolateDRC() is on.
+     * @return true on success and false in case of failure (use failureReason() for details)
      */
     virtual bool FixRoute( const VECTOR2I& aP, PNS_ITEM* aEndItem ) = 0;
+
+    /**
+      * Function FailureReason()
+      *
+      * Returns a text message explaining why Start(), move() or FixRoute() failed.
+      */
+    wxString FailureReason() const
+    {
+        return m_failureReason;
+    }
 
     /**
      * Function ToggleVia()
@@ -180,6 +193,21 @@ public:
     virtual void GetModifiedNets( std::vector<int> &aNets ) const
     {
     }
+
+protected:
+    void SetFailureReason(const wxString &aReason)
+    {
+        m_failureReason = aReason;
+    }
+
+    void ClearFailureReason()
+    {
+        m_failureReason.Clear();
+    }
+
+private:
+    wxString m_failureReason;
 };
 
 #endif
+
