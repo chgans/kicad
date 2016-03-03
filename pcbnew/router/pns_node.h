@@ -57,34 +57,6 @@ public:
     virtual void OverrideClearance (bool aEnable, int aNetA = 0, int aNetB = 0, int aClearance = 0) = 0;
 };
 
-class PNS_PCBNEW_CLEARANCE_FUNC : public PNS_CLEARANCE_FUNC
-{
-public:
-    PNS_PCBNEW_CLEARANCE_FUNC( PNS_ROUTER *aRouter );
-    virtual ~PNS_PCBNEW_CLEARANCE_FUNC();
-
-    virtual int operator()( const PNS_ITEM* aA, const PNS_ITEM* aB );
-    virtual void OverrideClearance (bool aEnable, int aNetA = 0, int aNetB = 0, int aClearance = 0);
-
-    void UseDpGap( bool aUseDpGap ) { m_useDpGap = aUseDpGap; }
-
-private:
-    struct CLEARANCE_ENT {
-        int coupledNet;
-        int clearance;
-    };
-
-    PNS_ROUTER *m_router;
-
-    int localPadClearance( const PNS_ITEM* aItem ) const;
-    std::vector<CLEARANCE_ENT> m_clearanceCache;
-    int m_defaultClearance;
-    bool m_overrideEnabled;
-    int m_overrideNetA, m_overrideNetB;
-    int m_overrideClearance;
-    bool m_useDpGap;
-};
-
 /**
  * Struct PNS_OBSTACLE
  *

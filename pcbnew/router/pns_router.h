@@ -52,6 +52,7 @@ class PNS_SEGMENT;
 class PNS_JOINT;
 class PNS_VIA;
 class PNS_CLEARANCE_FUNC;
+class PNS_PCBNEW_CLEARANCE_FUNC;
 class PNS_SHOVE;
 class PNS_DRAGGER;
 
