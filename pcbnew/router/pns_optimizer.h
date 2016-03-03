@@ -30,7 +30,7 @@
 #include "range.h"
 
 class PNS_NODE;
-class PNS_ROUTER;
+class PNS_ROUTER_IFACE;
 class PNS_LINE;
 class PNS_DIFF_PAIR;
 

@@ -25,7 +25,7 @@
 
 #include "pns_routing_settings.h"
 
-class PNS_ROUTER;
+class PNS_ROUTER_IFACE;
 class PNS_LOGGER;
 
 /**
@@ -37,14 +37,14 @@ class PNS_LOGGER;
 class PNS_ALGO_BASE
 {
 public:
-    PNS_ALGO_BASE( PNS_ROUTER* aRouter ) :
+    PNS_ALGO_BASE( PNS_ROUTER_IFACE* aRouter ) :
         m_router( aRouter )
     {}
 
     virtual ~PNS_ALGO_BASE() {}
 
     ///> Returns the instance of our router
-    PNS_ROUTER* Router() const
+    PNS_ROUTER_IFACE* Router() const
     {
         return m_router;
     }
@@ -56,7 +56,7 @@ public:
     virtual PNS_LOGGER* Logger();
 
 private:
-    PNS_ROUTER* m_router;
+    PNS_ROUTER_IFACE* m_router;
 };
 
 #endif

@@ -24,7 +24,7 @@
 #include "pns_shove.h"
 #include "pns_router.h"
 
-PNS_DRAGGER::PNS_DRAGGER( PNS_ROUTER* aRouter ) :
+PNS_DRAGGER::PNS_DRAGGER( PNS_ROUTER_IFACE* aRouter ) :
     PNS_ALGO_BASE( aRouter )
 {
     m_world = NULL;

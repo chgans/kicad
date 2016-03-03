@@ -27,7 +27,7 @@
 #include "pns_sizes_settings.h"
 #include "pns_itemset.h"
 
-class PNS_ROUTER;
+class PNS_ROUTER_IFACE;
 class PNS_ITEM;
 class PNS_NODE;
 
@@ -42,7 +42,7 @@ class PNS_NODE;
 class PNS_PLACEMENT_ALGO : public PNS_ALGO_BASE
 {
 public:
-    PNS_PLACEMENT_ALGO( PNS_ROUTER* aRouter ) :
+    PNS_PLACEMENT_ALGO( PNS_ROUTER_IFACE* aRouter ) :
         PNS_ALGO_BASE( aRouter ) {};
 
     virtual ~PNS_PLACEMENT_ALGO () {};

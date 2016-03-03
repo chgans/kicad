@@ -30,7 +30,7 @@
 #include "pns_router.h"
 
 
-PNS_MEANDER_SKEW_PLACER::PNS_MEANDER_SKEW_PLACER ( PNS_ROUTER* aRouter ) :
+PNS_MEANDER_SKEW_PLACER::PNS_MEANDER_SKEW_PLACER ( PNS_ROUTER_IFACE* aRouter ) :
     PNS_MEANDER_PLACER ( aRouter )
 {
     // Init temporary variables (do not leave uninitialized members)

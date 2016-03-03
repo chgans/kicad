@@ -34,10 +34,9 @@
 #include "pns_meander_placer_base.h"
 #include "pns_diff_pair.h"
 
-class PNS_ROUTER;
+class PNS_ROUTER_IFACE;
 class PNS_SHOVE;
 class PNS_OPTIMIZER;
-class PNS_ROUTER_BASE;
 
 /**
  * Class PNS_DP_MEANDER_PLACER
@@ -48,7 +47,7 @@ class PNS_ROUTER_BASE;
 class PNS_DP_MEANDER_PLACER : public PNS_MEANDER_PLACER_BASE
 {
 public:
-    PNS_DP_MEANDER_PLACER( PNS_ROUTER* aRouter );
+    PNS_DP_MEANDER_PLACER( PNS_ROUTER_IFACE* aRouter );
     ~PNS_DP_MEANDER_PLACER();
 
     /**

@@ -34,7 +34,7 @@
 
 using boost::optional;
 
-PNS_LINE_PLACER::PNS_LINE_PLACER( PNS_ROUTER* aRouter ) :
+PNS_LINE_PLACER::PNS_LINE_PLACER( PNS_ROUTER_IFACE* aRouter ) :
     PNS_PLACEMENT_ALGO( aRouter )
 {
     m_initial_direction = DIRECTION_45::N;

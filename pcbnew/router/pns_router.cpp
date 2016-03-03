@@ -624,6 +624,11 @@ bool PNS_ROUTER::StartDragging( const VECTOR2I& aP, PNS_ITEM* aStartItem )
     return true;
 }
 
+PNS_ROUTING_SETTINGS &PNS_ROUTER::Settings()
+{
+    return m_settings;
+}
+
 bool PNS_ROUTER::StartRouting( const VECTOR2I& aP, PNS_ITEM* aStartItem, int aLayer )
 {
     m_clearanceFunc->UseDpGap( false );
@@ -670,7 +675,7 @@ BOARD* PNS_ROUTER::GetBoard()
     return m_board;
 }
 
-int PNS_ROUTER::DpCoupledNet(int aNet)
+int PNS_ROUTER::DpCoupledNet(int aNet) const
 {
     wxString refName = m_board->FindNet( aNet )->GetNetname();
     wxString dummy, coupledNetName;
@@ -689,7 +694,7 @@ int PNS_ROUTER::DpCoupledNet(int aNet)
     return -1;
 }
 
-int PNS_ROUTER::DpNetPolarity(int aNet)
+int PNS_ROUTER::DpNetPolarity(int aNet) const
 {
     wxString refName = m_board->FindNet( aNet )->GetNetname();
     wxString dummy1, dummy2;
@@ -697,17 +702,17 @@ int PNS_ROUTER::DpNetPolarity(int aNet)
     return MatchDpSuffix( refName, dummy1, dummy2 );
 }
 
-bool PNS_ROUTER::IsPairedNet(int aNet)
+bool PNS_ROUTER::IsPairedNet(int aNet) const
 {
     return false; // FIXME
 }
 
-int PNS_ROUTER::PairingPolarity(int aNet)
+int PNS_ROUTER::PairingPolarity(int aNet) const
 {
     return 0; // FIXME
 }
 
-int PNS_ROUTER::GetPairedNet(int aNet)
+int PNS_ROUTER::GetPairedNet(int aNet) const
 {
     return 0; // FIXME
 }
@@ -769,13 +774,13 @@ void PNS_ROUTER::DrawDebugDirs(VECTOR2D aP, int aMask, int aColor)
     }
 }
 
-bool PNS_ROUTER::ValidateClearanceForNet(int aClearance, int aNet)
+bool PNS_ROUTER::ValidateClearanceForNet(int aClearance, int aNet) const
 {
     NETCLASSPTR netclass = m_board->FindNet( aNet )->GetNetClass();
     return aClearance < netclass->GetClearance();
 }
 
-bool PNS_ROUTER::ValidateTrackWidth(int aWidth)
+bool PNS_ROUTER::ValidateTrackWidth(int aWidth) const
 {
     return aWidth < m_board->GetDesignSettings().m_TrackMinWidth;
 }
@@ -940,7 +945,7 @@ void PNS_ROUTER::updateView( PNS_NODE* aNode, PNS_ITEMSET& aCurrent )
     }
 }
 
-int PNS_ROUTER::MatchDpSuffix(wxString aNetName, wxString &aComplementNet, wxString &aBaseDpName)
+int PNS_ROUTER::MatchDpSuffix(wxString aNetName, wxString &aComplementNet, wxString &aBaseDpName) const
 {
     int rv = 0;
 
@@ -984,6 +989,21 @@ void PNS_ROUTER::UpdateSizes ( const PNS_SIZES_SETTINGS& aSizes )
     {
         m_placer->UpdateSizes( m_sizes );
     }
+}
+
+void PNS_ROUTER::EnableSnapping(bool aEnable)
+{
+    m_snappingEnabled = aEnable;
+}
+
+bool PNS_ROUTER::SnappingEnabled() const
+{
+    return m_snappingEnabled;
+}
+
+PNS_SIZES_SETTINGS &PNS_ROUTER::Sizes()
+{
+    return m_sizes;
 }
 
 
@@ -1085,6 +1105,16 @@ void PNS_ROUTER::CommitRouting( PNS_NODE* aNode )
     m_world->Commit( aNode );
 }
 
+void PNS_ROUTER::SetFailureReason(const wxString &aReason)
+{
+    m_failureReason = aReason;
+}
+
+const wxString &PNS_ROUTER::FailureReason() const
+{
+    return m_failureReason;
+}
+
 
 bool PNS_ROUTER::FixRoute( const VECTOR2I& aP, PNS_ITEM* aEndItem )
 {
@@ -1144,6 +1174,11 @@ void PNS_ROUTER::StopRouting()
     m_state = IDLE;
     m_world->KillChildren();
     m_world->ClearRanks();
+}
+
+PNS_NODE *PNS_ROUTER::GetWorld() const
+{
+    return m_world;
 }
 
 
@@ -1216,6 +1251,11 @@ void PNS_ROUTER::DumpLog()
 
     if( logger )
         logger->Save( "/tmp/shove.log" );
+}
+
+PNS_CLEARANCE_FUNC *PNS_ROUTER::GetClearanceFunc() const
+{
+    return m_clearanceFunc;
 }
 
 

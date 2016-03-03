@@ -72,7 +72,7 @@ void PNS_SHOVE::sanityCheck( PNS_LINE* aOld, PNS_LINE* aNew )
 }
 
 
-PNS_SHOVE::PNS_SHOVE( PNS_NODE* aWorld, PNS_ROUTER* aRouter ) :
+PNS_SHOVE::PNS_SHOVE( PNS_NODE* aWorld, PNS_ROUTER_IFACE* aRouter ) :
     PNS_ALGO_BASE ( aRouter )
 {
     m_forceClearance = -1;

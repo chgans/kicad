@@ -32,7 +32,7 @@
 
 class PNS_LINE;
 class PNS_NODE;
-class PNS_ROUTER;
+class PNS_ROUTER_IFACE;
 
 /**
  * Class PNS_SHOVE
@@ -53,7 +53,7 @@ public:
         SH_TRY_WALK
     };
 
-    PNS_SHOVE( PNS_NODE* aWorld, PNS_ROUTER* aRouter );
+    PNS_SHOVE( PNS_NODE* aWorld, PNS_ROUTER_IFACE* aRouter );
     ~PNS_SHOVE();
 
     virtual PNS_LOGGER* Logger()

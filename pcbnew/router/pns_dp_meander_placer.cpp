@@ -33,7 +33,7 @@
 
 using boost::optional;
 
-PNS_DP_MEANDER_PLACER::PNS_DP_MEANDER_PLACER( PNS_ROUTER* aRouter ) :
+PNS_DP_MEANDER_PLACER::PNS_DP_MEANDER_PLACER( PNS_ROUTER_IFACE* aRouter ) :
     PNS_MEANDER_PLACER_BASE( aRouter )
 {
     m_world = NULL;

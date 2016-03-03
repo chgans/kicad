@@ -24,10 +24,9 @@
 #include "pns_meander_placer.h"
 #include "pns_diff_pair.h"
 
-class PNS_ROUTER;
+class PNS_ROUTER_IFACE;
 class PNS_SHOVE;
 class PNS_OPTIMIZER;
-class PNS_ROUTER_BASE;
 
 /**
  * Class PNS_MEANDER_SKEW_PLACER
@@ -37,7 +36,7 @@ class PNS_ROUTER_BASE;
 class PNS_MEANDER_SKEW_PLACER : public PNS_MEANDER_PLACER
 {
 public:
-    PNS_MEANDER_SKEW_PLACER( PNS_ROUTER* aRouter );
+    PNS_MEANDER_SKEW_PLACER( PNS_ROUTER_IFACE* aRouter );
     ~PNS_MEANDER_SKEW_PLACER();
 
     /// @copydoc PNS_PLACEMENT_ALGO::Start()

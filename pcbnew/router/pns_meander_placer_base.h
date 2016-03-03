@@ -32,10 +32,9 @@
 #include "pns_placement_algo.h"
 #include "pns_meander.h"
 
-class PNS_ROUTER;
+class PNS_ROUTER_IFACE;
 class PNS_SHOVE;
 class PNS_OPTIMIZER;
-class PNS_ROUTER_BASE;
 
 /**
  * Class PNS_MEANDER_PLACER_BASE
@@ -53,7 +52,7 @@ public:
         TUNED
     };
 
-    PNS_MEANDER_PLACER_BASE( PNS_ROUTER* aRouter );
+    PNS_MEANDER_PLACER_BASE( PNS_ROUTER_IFACE* aRouter );
     virtual ~PNS_MEANDER_PLACER_BASE();
 
     /**

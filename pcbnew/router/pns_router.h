@@ -71,12 +71,60 @@ enum PNS_ROUTER_MODE {
     PNS_MODE_TUNE_DIFF_PAIR_SKEW
 };
 
+class PNS_ROUTER_IFACE
+{
+public:
+    PNS_ROUTER_IFACE()
+    {}
+
+    virtual ~PNS_ROUTER_IFACE()
+    {}
+
+    // Node tree access
+    virtual PNS_NODE* GetWorld() const = 0;
+
+    // Algo results
+    virtual void CommitRouting( PNS_NODE* aNode ) = 0;
+
+    // Error management
+    virtual void SetFailureReason ( const wxString& aReason ) = 0;
+    virtual const wxString& FailureReason() const = 0;
+
+    // Snapping
+    virtual bool SnappingEnabled() const = 0;
+    virtual const VECTOR2I SnapToItem( PNS_ITEM* aItem, VECTOR2I aP, bool& aSplitsSegment ) = 0;
+
+    // Clearance
+    virtual PNS_CLEARANCE_FUNC* GetClearanceFunc() const = 0;
+    virtual bool ValidateClearanceForNet( int aClearance, int aNet ) const = 0;
+    virtual bool ValidateTrackWidth( int aWidth ) const = 0;
+
+    // Differential pair
+    virtual int DpCoupledNet( int aNet ) const = 0;
+    virtual int DpNetPolarity( int aNet ) const = 0;
+    virtual bool IsPairedNet( int aNet ) const = 0;
+    virtual int PairingPolarity( int aNet ) const = 0;
+    virtual int GetPairedNet( int aNet ) const = 0;
+
+    // Settings (FIXME: should be const &() const)
+    virtual PNS_ROUTING_SETTINGS& Settings() = 0;
+    virtual PNS_SIZES_SETTINGS& Sizes() = 0;
+
+    // Debugging
+    virtual void DisplayDebugLine( const SHAPE_LINE_CHAIN& aLine, int aType = 0, int aWidth = 0 ) = 0;
+    virtual void DisplayDebugPoint( const VECTOR2I aPos, int aType = 0 ) = 0;
+    virtual void DrawDebugPoint( VECTOR2I aP, int aColor ) = 0;
+    virtual void DrawDebugBox( BOX2I aB, int aColor ) = 0;
+    virtual void DrawDebugSeg( SEG aS, int aColor ) = 0;
+    virtual void DrawDebugDirs( VECTOR2D aP, int aMask, int aColor ) = 0;
+};
+
 /**
  * Class PNS_ROUTER
  *
  * Main router class.
  */
-class PNS_ROUTER
+class PNS_ROUTER: public PNS_ROUTER_IFACE
 {
 private:
     enum RouterState
@@ -108,19 +156,10 @@ public:
 
     int GetClearance( const PNS_ITEM* aA, const PNS_ITEM* aB ) const;
 
-    PNS_NODE* GetWorld() const
-    {
-        return m_world;
-    }
-
     void FlipPosture();
 
     void DisplayItem( const PNS_ITEM* aItem, int aColor = -1, int aClearance = -1 );
     void DisplayItems( const PNS_ITEMSET& aItems );
-
-    void DisplayDebugLine( const SHAPE_LINE_CHAIN& aLine, int aType = 0, int aWidth = 0 );
-    void DisplayDebugPoint( const VECTOR2I aPos, int aType = 0 );
-    void DisplayDebugBox( const BOX2I& aBox, int aType = 0, int aWidth = 0 );
 
     void SwitchLayer( int layer );
 
@@ -132,14 +171,9 @@ public:
 
     void DumpLog();
 
-    PNS_CLEARANCE_FUNC* GetClearanceFunc() const
-    {
-        return m_clearanceFunc;
-    }
     bool IsPlacingVia() const;
 
     const PNS_ITEMSET   QueryHoverItems( const VECTOR2I& aP );
-    const VECTOR2I      SnapToItem( PNS_ITEM* aItem, VECTOR2I aP, bool& aSplitsSegment );
 
     bool StartDragging( const VECTOR2I& aP, PNS_ITEM* aItem );
 
@@ -154,10 +188,6 @@ public:
 
     bool GetShowIntermediateSteps() const { return m_showInterSteps; }
     int GetShapshotIter() const { return m_snapshotIter; }
-
-    PNS_ROUTING_SETTINGS& Settings() { return m_settings; }
-
-    void CommitRouting( PNS_NODE* aNode );
 
     /**
      * Returns the last changes introduced by the router (since the last time ClearLastChanges()
@@ -191,27 +221,12 @@ public:
         m_settings = aSettings;
     }
 
-    void EnableSnapping( bool aEnable )
-    {
-        m_snappingEnabled = aEnable;
-    }
+    void EnableSnapping( bool aEnable );
 
-    bool SnappingEnabled() const
-    {
-        return m_snappingEnabled;
-    }
-
-    PNS_SIZES_SETTINGS& Sizes()
-    {
-        return m_sizes;
-    }
 
     PNS_ITEM *QueryItemByParent ( const BOARD_ITEM *aItem ) const;
 
     BOARD *GetBoard();
-
-    void SetFailureReason ( const wxString& aReason ) { m_failureReason = aReason; }
-    const wxString& FailureReason() const { return m_failureReason; }
 
     PNS_PLACEMENT_ALGO *Placer() { return m_placer; }
 
@@ -220,21 +235,48 @@ public:
         m_gridHelper = aGridHelper;
     }
 
-    virtual int DpCoupledNet( int aNet );
-    virtual int DpNetPolarity( int aNet );
 
-    bool IsPairedNet( int aNet );
-    // Returns >0 for positive net of a pair, <0 for negative net of a apir, 0 if net is not paired
-    int PairingPolarity( int aNet );
-    int GetPairedNet( int aNet );
+    /*
+     * PNS_ROUTER_IFACE implementation
+     */
 
+    // Node tree access
+    virtual PNS_NODE* GetWorld() const;
+
+    // Algo results
+    virtual void CommitRouting( PNS_NODE* aNode );
+
+    // Error management
+    virtual void SetFailureReason ( const wxString& aReason );
+    virtual const wxString& FailureReason() const;
+
+    // Snapping
+    virtual bool SnappingEnabled() const;
+    virtual const VECTOR2I SnapToItem( PNS_ITEM* aItem, VECTOR2I aP, bool& aSplitsSegment );
+
+    // Clearance
+    virtual PNS_CLEARANCE_FUNC* GetClearanceFunc() const;
+    virtual bool ValidateClearanceForNet( int aClearance, int aNet ) const;
+    virtual bool ValidateTrackWidth( int aWidth ) const;
+
+    // Differential pair
+    virtual int DpCoupledNet( int aNet ) const;
+    virtual int DpNetPolarity( int aNet ) const;
+    virtual bool IsPairedNet( int aNet ) const;
+    virtual int PairingPolarity( int aNet ) const;
+    virtual int GetPairedNet( int aNet ) const;
+
+    // Settings
+    virtual PNS_ROUTING_SETTINGS& Settings();
+    virtual PNS_SIZES_SETTINGS& Sizes();
+
+    // Debugging
+    virtual void DisplayDebugLine( const SHAPE_LINE_CHAIN& aLine, int aType = 0, int aWidth = 0 );
+    virtual void DisplayDebugPoint( const VECTOR2I aPos, int aType = 0 );
     virtual void DrawDebugPoint( VECTOR2I aP, int aColor );
     virtual void DrawDebugBox( BOX2I aB, int aColor );
     virtual void DrawDebugSeg( SEG aS, int aColor );
     virtual void DrawDebugDirs( VECTOR2D aP, int aMask, int aColor );
-
-    bool ValidateClearanceForNet( int aClearance, int aNet );
-    bool ValidateTrackWidth( int aWidth );
 
 private:
     void movePlacing( const VECTOR2I& aP, PNS_ITEM* aItem );
@@ -245,7 +287,7 @@ private:
 
     void clearViewFlags();
 
-    int MatchDpSuffix( wxString aNetName, wxString& aComplementNet, wxString& aBaseDpName );
+    int MatchDpSuffix( wxString aNetName, wxString& aComplementNet, wxString& aBaseDpName ) const;
 
     // optHoverItem queryHoverItemEx(const VECTOR2I& aP);
 

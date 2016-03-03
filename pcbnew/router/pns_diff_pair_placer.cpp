@@ -34,7 +34,7 @@
 
 using boost::optional;
 
-PNS_DIFF_PAIR_PLACER::PNS_DIFF_PAIR_PLACER( PNS_ROUTER* aRouter ) :
+PNS_DIFF_PAIR_PLACER::PNS_DIFF_PAIR_PLACER( PNS_ROUTER_IFACE* aRouter ) :
     PNS_PLACEMENT_ALGO( aRouter )
 {
     m_state = RT_START;
