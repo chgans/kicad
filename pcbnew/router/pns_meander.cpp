@@ -20,8 +20,6 @@
 
 #include <boost/foreach.hpp>
 
-#include <base_units.h> // God forgive me doing this...
-
 #include "trace.h"
 
 #include "pns_node.h"

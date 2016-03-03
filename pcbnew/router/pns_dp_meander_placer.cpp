@@ -21,8 +21,6 @@
 #include <boost/foreach.hpp>
 #include <boost/optional.hpp>
 
-#include <base_units.h> // God forgive me doing this...
-
 #include "trace.h"
 
 #include "pns_node.h"
@@ -334,6 +332,26 @@ bool PNS_DP_MEANDER_PLACER::CheckFit( PNS_MEANDER_SHAPE* aShape )
     return m_result.CheckSelfIntersections( aShape, clearance );
 }
 
+bool PNS_DP_MEANDER_PLACER::IsDual() const
+{
+    return true;
+}
+
+int PNS_DP_MEANDER_PLACER::CurrentLength() const
+{
+    return m_lastLength;
+}
+
+int PNS_DP_MEANDER_PLACER::TargetLength() const
+{
+    return m_settings.m_targetLength;
+}
+
+int PNS_DP_MEANDER_PLACER::PairGap() const
+{
+    return m_originPair.Gap();
+}
+
 
 const PNS_ITEMSET PNS_DP_MEANDER_PLACER::Traces()
 {
@@ -358,36 +376,6 @@ const VECTOR2I& PNS_DP_MEANDER_PLACER::CurrentEnd() const
 int PNS_DP_MEANDER_PLACER::CurrentLayer() const
 {
     return m_initialSegment->Layers().Start();
-}
-
-
-const wxString PNS_DP_MEANDER_PLACER::TuningInfo() const
-{
-    wxString status;
-
-    switch( m_lastStatus )
-    {
-    case TOO_LONG:
-        status = _( "Too long: " );
-        break;
-    case TOO_SHORT:
-        status = _("Too short: " );
-        break;
-    case TUNED:
-        status = _( "Tuned: " );
-        break;
-    default:
-        return _( "?" );
-    }
-
-    status += LengthDoubleToString( (double) m_lastLength, false );
-    status += "/";
-    status += LengthDoubleToString( (double) m_settings.m_targetLength, false );
-    status += " (gap: ";
-    status += LengthDoubleToString( (double) m_originPair.Gap(), false );
-    status += ")";
-
-    return status;
 }
 
 

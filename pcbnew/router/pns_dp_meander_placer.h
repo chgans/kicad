@@ -99,10 +99,21 @@ public:
 
     int totalLength();
 
-    const wxString TuningInfo() const;
     TUNING_STATUS TuningStatus() const;
 
     bool CheckFit( PNS_MEANDER_SHAPE* aShape );
+
+    /// @copydoc PNS_MEANDER_PLACER_BASE::IsDual()
+    virtual bool IsDual() const;
+
+    /// @copydoc PNS_MEANDER_PLACER_BASE::CurrentLength()
+    virtual int CurrentLength() const;
+
+    /// @copydoc PNS_MEANDER_PLACER_BASE::TargetLength()
+    virtual int TargetLength() const;
+
+    /// @copydoc PNS_MEANDER_PLACER_BASE::PairGap()
+    virtual int PairGap() const;
 
 
 private:

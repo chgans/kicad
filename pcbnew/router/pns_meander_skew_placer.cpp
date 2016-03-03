@@ -20,8 +20,6 @@
 
 #include <boost/foreach.hpp>
 
-#include <base_units.h> // God forgive me doing this...
-
 #include "trace.h"
 
 #include "pns_node.h"
@@ -144,30 +142,22 @@ bool PNS_MEANDER_SKEW_PLACER::Move( const VECTOR2I& aP, PNS_ITEM* aEndItem )
     return doMove( aP, aEndItem, m_coupledLength + m_settings.m_targetSkew );
 }
 
-
-const wxString PNS_MEANDER_SKEW_PLACER::TuningInfo() const
+bool PNS_MEANDER_SKEW_PLACER::IsDual() const
 {
-    wxString status;
-
-    switch( m_lastStatus )
-    {
-    case TOO_LONG:
-        status = _( "Too long: skew " );
-        break;
-    case TOO_SHORT:
-        status = _( "Too short: skew " );
-        break;
-    case TUNED:
-        status = _( "Tuned: skew " );
-        break;
-    default:
-        return _( "?" );
-    }
-
-    status += LengthDoubleToString( (double) m_lastLength - m_coupledLength, false );
-    status += "/";
-    status += LengthDoubleToString( (double) m_settings.m_targetSkew, false );
-
-    return status;
+    return false; // FIXME: Not true, needed for making up the current info/status text
 }
 
+int PNS_MEANDER_SKEW_PLACER::CurrentLength() const
+{
+    return currentSkew();
+}
+
+int PNS_MEANDER_SKEW_PLACER::TargetLength() const
+{
+    return m_settings.m_targetSkew;
+}
+
+int PNS_MEANDER_SKEW_PLACER::PairGap() const
+{
+    return 0;
+}

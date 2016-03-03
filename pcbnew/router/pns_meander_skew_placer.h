@@ -46,8 +46,17 @@ public:
     /// @copydoc PNS_PLACEMENT_ALGO::Move()
     bool Move( const VECTOR2I& aP, PNS_ITEM* aEndItem );
 
-    /// @copydoc PNS_MEANDER_PLACER_BASE::TuningInfo()
-    const wxString TuningInfo() const;
+    /// @copydoc PNS_MEANDER_PLACER_BASE::IsDual()
+    virtual bool IsDual() const;
+
+    /// @copydoc PNS_MEANDER_PLACER_BASE::CurrentLength()
+    virtual int CurrentLength() const;
+
+    /// @copydoc PNS_MEANDER_PLACER_BASE::TargetLength()
+    virtual int TargetLength() const;
+
+    /// @copydoc PNS_MEANDER_PLACER_BASE::PairGap()
+    virtual int PairGap() const;
 
 private:
 

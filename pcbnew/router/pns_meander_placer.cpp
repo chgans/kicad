@@ -20,8 +20,6 @@
 
 #include <boost/foreach.hpp>
 
-#include <base_units.h> // God forgive me doing this...
-
 #include "trace.h"
 
 #include "pns_node.h"
@@ -233,33 +231,25 @@ int PNS_MEANDER_PLACER::CurrentLayer() const
     return m_initialSegment->Layers().Start();
 }
 
-
-const wxString PNS_MEANDER_PLACER::TuningInfo() const
+bool PNS_MEANDER_PLACER::IsDual() const
 {
-    wxString status;
-
-    switch ( m_lastStatus )
-    {
-    case TOO_LONG:
-        status = _( "Too long: " );
-        break;
-    case TOO_SHORT:
-        status = _( "Too short: " );
-        break;
-    case TUNED:
-        status = _( "Tuned: " );
-        break;
-    default:
-        return _( "?" );
-    }
-
-    status += LengthDoubleToString( (double) m_lastLength, false );
-    status += "/";
-    status += LengthDoubleToString( (double) m_settings.m_targetLength, false );
-
-    return status;
+    return false;
 }
 
+int PNS_MEANDER_PLACER::CurrentLength() const
+{
+    return m_lastLength;
+}
+
+int PNS_MEANDER_PLACER::TargetLength() const
+{
+    return m_settings.m_targetLength;
+}
+
+int PNS_MEANDER_PLACER::PairGap() const
+{
+    return 0;
+}
 
 PNS_MEANDER_PLACER::TUNING_STATUS PNS_MEANDER_PLACER::TuningStatus() const
 {

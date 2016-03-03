@@ -18,6 +18,8 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <base_units.h>
+
 #include "pns_tune_status_popup.h"
 #include "pns_router.h"
 #include "pns_meander_placer.h"
@@ -43,23 +45,37 @@ void PNS_TUNE_STATUS_POPUP::UpdateStatus( PNS_ROUTER* aRouter )
     if( !placer )
         return;
 
-    m_statusLine->SetLabel( placer->TuningInfo() );
-
+    wxString status;
     wxColour color;
 
     switch( placer->TuningStatus() )
     {
     case PNS_MEANDER_PLACER::TUNED:
+        status = _( "Tuned" );
         color = wxColour( 0, 255, 0 );
         break;
     case PNS_MEANDER_PLACER::TOO_SHORT:
+        status = _( "Too short" );
         color = wxColour( 255, 128, 128 );
         break;
     case PNS_MEANDER_PLACER::TOO_LONG:
+        status = _( "Too long" );
         color = wxColour( 128, 128, 255 );
         break;
     }
 
+    status += ": ";
+    status += LengthDoubleToString( (double) placer->CurrentLength(), false );
+    status += "/";
+    status += LengthDoubleToString( (double) placer->TargetLength(), false );
+    if (placer->IsDual())
+    {
+        status += " (gap: ";
+        status += LengthDoubleToString( (double) placer->PairGap(), false );
+        status += ")";
+    }
+
+    m_statusLine->SetLabel(status);
     m_statusLine->SetForegroundColour( color );
 
     updateSize();

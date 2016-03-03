@@ -77,8 +77,17 @@ public:
     /// @copydoc PNS_PLACEMENT_ALGO::CurrentLayer()
     int CurrentLayer() const;
 
-    /// @copydoc PNS_MEANDER_PLACER_BASE::TuningInfo()
-    virtual const wxString TuningInfo() const;
+    /// @copydoc PNS_MEANDER_PLACER_BASE::IsDual()
+    virtual bool IsDual() const;
+
+    /// @copydoc PNS_MEANDER_PLACER_BASE::CurrentLength()
+    virtual int CurrentLength() const;
+
+    /// @copydoc PNS_MEANDER_PLACER_BASE::TargetLength()
+    virtual int TargetLength() const;
+
+    /// @copydoc PNS_MEANDER_PLACER_BASE::PairGap()
+    virtual int PairGap() const;
 
     /// @copydoc PNS_MEANDER_PLACER_BASE::TuningStatus()
     virtual TUNING_STATUS TuningStatus() const;

@@ -40,7 +40,7 @@ class PNS_ROUTER_BASE;
 /**
  * Class PNS_MEANDER_PLACER_BASE
  *
- * Base class for Single trace & Differenial pair meandering tools, as
+ * Base class for Single trace & Differential pair meandering tools, as
  * both of them share a lot of code.
  */
 class PNS_MEANDER_PLACER_BASE : public PNS_PLACEMENT_ALGO
@@ -55,14 +55,6 @@ public:
 
     PNS_MEANDER_PLACER_BASE( PNS_ROUTER* aRouter );
     virtual ~PNS_MEANDER_PLACER_BASE();
-
-    /**
-     * Function TuningInfo()
-     *
-     * Returns a string describing the status and length of the
-     * tuned traces.
-     */
-    virtual const wxString TuningInfo() const = 0;
 
     /**
      * Function TuningStatus()
@@ -117,6 +109,34 @@ public:
     {
         return false;
     }
+
+    /**
+     * Function IsDual()
+     *
+     * @return true if this tool is a Differential pair meandering tools
+     */
+    virtual bool IsDual() const = 0;
+
+    /**
+     * Function TargetLength()
+     *
+     * @return the desired length of the tuned line/diff pair
+     */
+    virtual int TargetLength() const = 0;
+
+    /**
+     * Function CurrentLength()
+     *
+     * @return the current length of the tuned line/diff pair
+     */
+    virtual int CurrentLength() const = 0;
+
+    /**
+     * Function PairGap()
+     *
+     * @return the gap between the diff pair, valid only when IsDual() returns true
+     */
+    virtual int PairGap() const = 0;
 
 protected:
 
