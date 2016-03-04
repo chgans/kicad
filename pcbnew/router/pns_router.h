@@ -80,22 +80,29 @@ public:
     virtual ~PNS_ROUTER_IFACE()
     {}
 
-    // Node tree access
+    // Node tree access, used by placers.
+    // Is it a good idea to be able to do: placer->setWorld()
     virtual PNS_NODE* GetWorld() const = 0;
 
-    // Algo results
+    // Algo results, called by the various FixRoute(). Used to notify outside world what have changed?
     virtual void CommitRouting( PNS_NODE* aNode ) = 0;
 
-    // Snapping
+    // Snapping (Only used by line and pair placers in their Start() )
     virtual bool SnappingEnabled() const = 0;
     virtual const VECTOR2I SnapToItem( PNS_ITEM* aItem, VECTOR2I aP, bool& aSplitsSegment ) = 0;
 
     // Clearance
+    // Only used by pair placer to override temporally the clearance (!?!)
+    // The clearance functor is transferred the the world node.
     virtual PNS_CLEARANCE_FUNC* GetClearanceFunc() const = 0;
+    // Needed only by pair placer, should be part of the clearance functor
+    // Clearance functor to be made a querying/validating class, eg: PNS_DESIGN_RULES_VALIDATOR/CHECKER or PNS_DRC_ENGINE
     virtual bool ValidateClearanceForNet( int aClearance, int aNet ) const = 0;
     virtual bool ValidateTrackWidth( int aWidth ) const = 0;
 
-    // Differential pair
+    // Differential pair (given a net, find its paired net)
+    // For this one, it is obviously implementation dependent. This is about queryin the
+    // netlist for specail cases. Diff pair are such special cases.
     virtual int DpCoupledNet( int aNet ) const = 0;
     virtual int DpNetPolarity( int aNet ) const = 0;
     virtual bool IsPairedNet( int aNet ) const = 0;

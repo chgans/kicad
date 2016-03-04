@@ -46,6 +46,9 @@ enum LineMarker {
  *
  * Base class for PNS router board items. Implements the shared properties of all PCB items -
  * net, spanned layers, geometric shape & refererence to owning model.
+ * @todo Remove dependencies on BOARD_CONNECTED_ITEM, by either:
+ *  - Remove the whole parent story (Let the user's code track association themselves)
+ *  - Replace BOARD_CONNECTED_ITEM *m_parent by void *m_cookie, and add convenience accessor like 'T* Parent<T>()'
  */
 class PNS_ITEM
 {
