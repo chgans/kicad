@@ -43,6 +43,7 @@ class PNS_VIA;
 class PNS_RATSNEST;
 class PNS_INDEX;
 class PNS_ROUTER_IFACE;
+class BOARD_CONNECTED_ITEM;
 
 /**
  * Class PNS_CLEARANCE_FUNC

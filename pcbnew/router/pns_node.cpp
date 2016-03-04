@@ -21,6 +21,8 @@
 #include <vector>
 #include <cassert>
 
+#include "class_board_connected_item.h"
+
 #include <math/vector2d.h>
 
 #include <geometry/seg.h>

@@ -38,6 +38,7 @@
 #include <tools/grid_helper.h>
 
 #include "trace.h"
+#include "pns_via.h"
 #include "pns_node.h"
 #include "pns_line_placer.h"
 #include "pns_line.h"
@@ -401,7 +402,7 @@ PNS_ITEM* PNS_ROUTER::syncVia( VIA* aVia )
             aVia->GetWidth(),
             aVia->GetDrillValue(),
             aVia->GetNetCode(),
-            aVia->GetViaType() );
+            (PNS_VIA_TYPE)aVia->GetViaType() );
 
     v->SetParent( aVia );
 
@@ -1073,7 +1074,7 @@ void PNS_ROUTER::CommitRouting( PNS_NODE* aNode )
             via_board->SetWidth( via->Diameter() );
             via_board->SetDrill( via->Drill() );
             via_board->SetNetCode( via->Net() > 0 ? via->Net() : 0 );
-            via_board->SetViaType( via->ViaType() ); // MUST be before SetLayerPair()
+            via_board->SetViaType( (VIATYPE_T)via->ViaType() ); // MUST be before SetLayerPair()
             via_board->SetLayerPair( ToLAYER_ID( via->Layers().Start() ),
                                      ToLAYER_ID( via->Layers().End() ) );
             newBI = via_board;

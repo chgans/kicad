@@ -469,7 +469,7 @@ bool ROUTER_TOOL::onViaCommand( TOOL_EVENT& aEvent, VIATYPE_T aType )
         break;
     }
 
-    sizes.SetViaType( aType );
+    sizes.SetViaType( (PNS_VIA_TYPE)aType );
 
     m_router->UpdateSizes( sizes );
     m_router->ToggleViaPlacement();

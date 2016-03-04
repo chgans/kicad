@@ -23,6 +23,7 @@
 #define __ROUTER_TOOL_H
 
 #include "pns_tool_base.h"
+#include "class_track.h"
 
 class BOARD_DESIGN_SETTINGS;
 

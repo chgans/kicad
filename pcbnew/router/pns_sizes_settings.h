@@ -24,7 +24,7 @@
 #include <map>
 #include <boost/optional.hpp>
 
-#include "../class_track.h" // for VIATYPE_T
+#include "pns_via.h"
 
 class PNS_ITEM;
 
@@ -39,7 +39,7 @@ public:
         m_viaDiameter( 600000 ),
         m_viaDrill( 250000 ),
         m_diffPairViaGapSameAsTraceGap( true ),
-        m_viaType( VIA_THROUGH )
+        m_viaType( PNS_THROUGH_VIA )
     {}
 
     ~PNS_SIZES_SETTINGS() {}
@@ -84,8 +84,8 @@ public:
     int GetLayerTop() const;
     int GetLayerBottom() const;
 
-    void SetViaType( VIATYPE_T aViaType ) { m_viaType = aViaType; }
-    VIATYPE_T ViaType() const { return m_viaType; }
+    void SetViaType( PNS_VIA_TYPE aViaType ) { m_viaType = aViaType; }
+    PNS_VIA_TYPE ViaType() const { return m_viaType; }
 
     static int inheritedTrackWidth( const PNS_ITEM* aItem );
 
@@ -101,7 +101,7 @@ private:
 
     bool m_diffPairViaGapSameAsTraceGap;
 
-    VIATYPE_T m_viaType;
+    PNS_VIA_TYPE m_viaType;
 
     std::map<int, int> m_layerPairs;
 };
