@@ -23,8 +23,6 @@
 
 #include <math/vector2d.h>
 
-#include "pns_node.h"
-#include "pns_via.h"
 #include "pns_line.h"
 #include "pns_algo_base.h"
 #include "pns_itemset.h"
@@ -32,6 +30,8 @@
 class PNS_ROUTER_IFACE;
 class PNS_SHOVE;
 class PNS_OPTIMIZER;
+class PNS_VIA;
+class PNS_NODE;
 
 /**
  * Class PNS_DRAGGER

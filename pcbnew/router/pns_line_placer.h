@@ -27,8 +27,6 @@
 #include <geometry/shape_line_chain.h>
 
 #include "pns_sizes_settings.h"
-#include "pns_node.h"
-#include "pns_via.h"
 #include "pns_line.h"
 #include "pns_placement_algo.h"
 
@@ -37,7 +35,7 @@ class PNS_SHOVE;
 class PNS_OPTIMIZER;
 class PNS_VIA;
 class PNS_SIZES_SETTINGS;
-
+class PNS_NODE;
 
 /**
  * Class PNS_LINE_PLACER

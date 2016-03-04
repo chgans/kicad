@@ -21,8 +21,6 @@
 #ifndef __PNS_ROUTING_SETTINGS
 #define __PNS_ROUTING_SETTINGS
 
-#include <cstdio>
-
 class DIRECTION_45;
 
 ///> Routing modes

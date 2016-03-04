@@ -26,18 +26,12 @@
 #include <geometry/shape.h>
 #include <geometry/shape_line_chain.h>
 
-#include "pns_sizes_settings.h"
 #include "pns_node.h"
-#include "pns_via.h"
 #include "pns_line.h"
-#include "pns_algo_base.h"
 #include "pns_diff_pair.h"
-
 #include "pns_placement_algo.h"
 
 class PNS_ROUTER_IFACE;
-class PNS_SHOVE;
-class PNS_OPTIMIZER;
 class PNS_VIA;
 class PNS_SIZES_SETTINGS;
 

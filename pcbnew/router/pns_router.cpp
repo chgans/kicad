@@ -474,14 +474,8 @@ PNS_ROUTER::PNS_ROUTER()
     m_mode = PNS_MODE_ROUTE_SINGLE;
 
     // Initialize all other variables:
-    m_lastNode = NULL;
-    m_shove = NULL;
-    m_iterLimit = 0;
-    m_showInterSteps = false;
-    m_snapshotIter = 0;
     m_view = NULL;
     m_snappingEnabled  = false;
-    m_violation = false;
     m_gridHelper = NULL;
 
 }
@@ -665,7 +659,6 @@ bool PNS_ROUTER::StartRouting( const VECTOR2I& aP, PNS_ITEM* aStartItem, int aLa
     if( !rv )
         return false;
 
-    m_currentEnd = aP;
     m_state = ROUTE_TRACK;
     return rv;
 }
@@ -852,8 +845,6 @@ void PNS_ROUTER::DisplayDebugPoint( const VECTOR2I aPos, int aType )
 
 void PNS_ROUTER::Move( const VECTOR2I& aP, PNS_ITEM* endItem )
 {
-    m_currentEnd = aP;
-
     switch( m_state )
     {
     case ROUTE_TRACK:

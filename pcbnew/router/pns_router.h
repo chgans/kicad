@@ -157,8 +157,6 @@ public:
 
     void StopRouting();
 
-    int GetClearance( const PNS_ITEM* aA, const PNS_ITEM* aB ) const;
-
     void FlipPosture();
 
     void DisplayItem( const PNS_ITEM* aItem, int aColor = -1, int aClearance = -1 );
@@ -179,18 +177,6 @@ public:
     const PNS_ITEMSET   QueryHoverItems( const VECTOR2I& aP );
 
     bool StartDragging( const VECTOR2I& aP, PNS_ITEM* aItem );
-
-    void SetIterLimit( int aX ) { m_iterLimit = aX; }
-    int GetIterLimit() const { return m_iterLimit; };
-
-    void SetShowIntermediateSteps( bool aX, int aSnapshotIter = -1 )
-    {
-        m_showInterSteps = aX;
-        m_snapshotIter = aSnapshotIter;
-    }
-
-    bool GetShowIntermediateSteps() const { return m_showInterSteps; }
-    int GetShapshotIter() const { return m_snapshotIter; }
 
     /**
      * Returns the last changes introduced by the router (since the last time ClearLastChanges()
@@ -308,24 +294,17 @@ private:
 
     void markViolations( PNS_NODE* aNode, PNS_ITEMSET& aCurrent, PNS_NODE::ITEM_VECTOR& aRemoved );
 
-    VECTOR2I m_currentEnd;
     RouterState m_state;
 
     BOARD* m_board;
     PNS_NODE* m_world;
-    PNS_NODE* m_lastNode;
     PNS_PLACEMENT_ALGO * m_placer;
     PNS_DRAGGER* m_dragger;
-    PNS_SHOVE* m_shove;
-    int m_iterLimit;
-    bool m_showInterSteps;
-    int m_snapshotIter;
 
     KIGFX::VIEW* m_view;
     KIGFX::VIEW_GROUP* m_previewItems;
 
     bool m_snappingEnabled;
-    bool m_violation;
 
     PNS_ROUTING_SETTINGS m_settings;
     PNS_PCBNEW_CLEARANCE_FUNC* m_clearanceFunc;
@@ -337,7 +316,6 @@ private:
     PNS_SIZES_SETTINGS m_sizes;
     PNS_ROUTER_MODE m_mode;
 
-    wxString m_toolStatusbarName;
     wxString m_failureReason;
 
     GRID_HELPER *m_gridHelper;

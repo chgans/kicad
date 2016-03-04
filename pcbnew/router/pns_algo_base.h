@@ -21,8 +21,6 @@
 #ifndef __PNS_ALGO_BASE_H
 #define __PNS_ALGO_BASE_H
 
-#include <wx/wx.h> // for wxString
-
 #include "pns_routing_settings.h"
 
 class PNS_ROUTER_IFACE;

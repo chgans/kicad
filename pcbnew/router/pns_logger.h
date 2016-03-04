@@ -21,8 +21,6 @@
 #ifndef __PNS_LOGGER_H
 #define __PNS_LOGGER_H
 
-#include <cstdio>
-#include <vector>
 #include <string>
 #include <sstream>
 

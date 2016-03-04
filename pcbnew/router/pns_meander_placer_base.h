@@ -26,15 +26,10 @@
 #include <geometry/shape.h>
 #include <geometry/shape_line_chain.h>
 
-#include "pns_node.h"
-#include "pns_via.h"
-#include "pns_line.h"
 #include "pns_placement_algo.h"
 #include "pns_meander.h"
 
 class PNS_ROUTER_IFACE;
-class PNS_SHOVE;
-class PNS_OPTIMIZER;
 
 /**
  * Class PNS_MEANDER_PLACER_BASE

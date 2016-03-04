@@ -25,8 +25,6 @@
 #include "pns_diff_pair.h"
 
 class PNS_ROUTER_IFACE;
-class PNS_SHOVE;
-class PNS_OPTIMIZER;
 
 /**
  * Class PNS_MEANDER_SKEW_PLACER
