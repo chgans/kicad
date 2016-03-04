@@ -39,7 +39,7 @@ class PNS_DIFF_PAIR;
  *
  * Defines a "gateway" for routing a differential pair - e.g. a pair of points (anchors) with certain
  * orientation, spacing and (optionally) predefined entry paths. The routing algorithm connects such
- * gateways with parallel lines, thus creating a difrerential pair.
+ * gateways with parallel lines, thus creating a differential pair.
  **/
 class PNS_DP_GATEWAY {
 public:
@@ -128,7 +128,7 @@ private:
 /**
  * Class PNS_DP_PRIMITIVE_PAIR
  *
- * Stores staring/ending primitives (pads, vias or segments) for a differential pair.
+ * Stores starting/ending primitives (pads, vias or segments) for a differential pair.
  **/
 class PNS_DP_PRIMITIVE_PAIR
 {
