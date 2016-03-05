@@ -32,6 +32,7 @@ class PNS_SIZES_SETTINGS {
 
 public:
     PNS_SIZES_SETTINGS() :
+        m_minimumTrackWidth( 125000 ),
         m_trackWidth( 155000 ),
         m_diffPairWidth( 125000 ),
         m_diffPairGap( 180000 ),
@@ -49,6 +50,9 @@ public:
 
     int TrackWidth() const { return m_trackWidth; }
     void SetTrackWidth( int aWidth ) { m_trackWidth = aWidth; }
+
+    int MinimumTrackWidth() const { return m_minimumTrackWidth; }
+    void SetMinimumTrackWidth( int aWidth ) { m_minimumTrackWidth = aWidth; }
 
     int DiffPairWidth() const { return m_diffPairWidth; }
     int DiffPairGap() const { return m_diffPairGap; }
@@ -90,8 +94,7 @@ public:
     static int inheritedTrackWidth( const PNS_ITEM* aItem );
 
 private:
-
-
+    int m_minimumTrackWidth;
     int m_trackWidth;
     int m_diffPairWidth;
     int m_diffPairGap;

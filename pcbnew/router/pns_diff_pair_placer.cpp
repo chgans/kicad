@@ -545,7 +545,8 @@ bool PNS_DIFF_PAIR_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
         return false;
     }
 
-    if( !Router()->ValidateTrackWidth( SizeSettings().DiffPairWidth() ) )
+    // FIXME: It's not our business to validate the settings
+    if( SizeSettings().DiffPairWidth() < SizeSettings().MinimumTrackWidth() )
     {
         SetFailureReason( _( "Current track width setting violates design rules." ) );
         return false;

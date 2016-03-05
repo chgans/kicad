@@ -651,6 +651,9 @@ bool PNS_ROUTER::StartRouting( const VECTOR2I& aP, PNS_ITEM* aStartItem, int aLa
         return false;
     }
 
+    // FIXME: it's not our business to set the minimum size here
+    m_sizes.SetMinimumTrackWidth(m_board->GetDesignSettings().m_TrackMinWidth);
+
     m_placer->UpdateSizeSettings( m_sizes );
     m_placer->SetLayer( aLayer );
 
@@ -774,12 +777,6 @@ bool PNS_ROUTER::ValidateClearanceForNet(int aClearance, int aNet) const
     NETCLASSPTR netclass = m_board->FindNet( aNet )->GetNetClass();
     return aClearance < netclass->GetClearance();
 }
-
-bool PNS_ROUTER::ValidateTrackWidth(int aWidth) const
-{
-    return aWidth < m_board->GetDesignSettings().m_TrackMinWidth;
-}
-
 
 void PNS_ROUTER::eraseView()
 {

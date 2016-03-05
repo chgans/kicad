@@ -98,7 +98,6 @@ public:
     // Needed only by pair placer, should be part of the clearance functor
     // Clearance functor to be made a querying/validating class, eg: PNS_DESIGN_RULES_VALIDATOR/CHECKER or PNS_DRC_ENGINE
     virtual bool ValidateClearanceForNet( int aClearance, int aNet ) const = 0;
-    virtual bool ValidateTrackWidth( int aWidth ) const = 0;
 
     // Differential pair (given a net, find its paired net)
     // For this one, it is obviously implementation dependent. This is about queryin the
@@ -241,7 +240,6 @@ public:
     // Clearance
     virtual PNS_CLEARANCE_FUNC* GetClearanceFunc() const;
     virtual bool ValidateClearanceForNet( int aClearance, int aNet ) const;
-    virtual bool ValidateTrackWidth( int aWidth ) const;
 
     // Differential pair
     virtual int DpCoupledNet( int aNet ) const;
