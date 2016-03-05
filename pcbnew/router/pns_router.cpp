@@ -704,7 +704,7 @@ bool PNS_ROUTER::StartDragging( const VECTOR2I& aP, PNS_ITEM* aStartItem )
         return false;
 
     m_dragger = new PNS_DRAGGER( this );
-    m_dragger->SetWorld( m_world );
+    m_dragger->SetInitialWorld( m_world );
 
     if( m_dragger->Start ( aP, aStartItem ) )
         m_state = DRAG_SEGMENT;
@@ -753,6 +753,7 @@ bool PNS_ROUTER::StartRouting( const VECTOR2I& aP, PNS_ITEM* aStartItem, int aLa
     // FIXME: it's not our business to set the minimum size here
     m_sizes.SetMinimumTrackWidth(m_board->GetDesignSettings().m_TrackMinWidth);
 
+    m_placer->SetInitialWorld( m_world );
     m_placer->UpdateSizeSettings( m_sizes );
     m_placer->SetLayer( aLayer );
 
@@ -1133,11 +1134,15 @@ bool PNS_ROUTER::FixRoute( const VECTOR2I& aP, PNS_ITEM* aEndItem )
     case ROUTE_TRACK:
         rv = m_placer->FixRoute( aP, aEndItem );
         SetFailureReason(m_placer->FailureReason());
+        if( rv)
+            CommitRouting( m_placer->GetResultingWorld() );
         break;
 
     case DRAG_SEGMENT:
         rv = m_dragger->FixRoute();
         SetFailureReason(m_dragger->FailureReason());
+        if( rv)
+            CommitRouting( m_dragger->GetResultingWorld() );
         break;
 
     default:

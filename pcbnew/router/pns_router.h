@@ -81,13 +81,6 @@ public:
     virtual ~PNS_ROUTER_IFACE()
     {}
 
-    // Node tree access, used by placers.
-    // Is it a good idea to be able to do: placer->setWorld()
-    virtual PNS_NODE* GetWorld() const = 0;
-
-    // Algo results, called by the various FixRoute(). Used to notify outside world what have changed?
-    virtual void CommitRouting( PNS_NODE* aNode ) = 0;
-
     // Snapping (Only used by line and pair placers in their Start() )
     virtual bool SnappingEnabled() const = 0;
     virtual const VECTOR2I SnapToItem( PNS_ITEM* aItem, VECTOR2I aP, bool& aSplitsSegment ) = 0;
@@ -207,23 +200,23 @@ public:
     void SetFailureReason ( const wxString& aReason );
     const wxString& FailureReason() const;
 
-    /*
-     * PNS_ROUTER_IFACE implementation
-     */
-
     // Node tree access
     virtual PNS_NODE* GetWorld() const;
 
     // Algo results
     virtual void CommitRouting( PNS_NODE* aNode );
 
-    // Snapping
-    virtual bool SnappingEnabled() const;
-    virtual const VECTOR2I SnapToItem( PNS_ITEM* aItem, VECTOR2I aP, bool& aSplitsSegment );
-
     // Settings
     virtual PNS_ROUTING_SETTINGS& Settings();
     virtual PNS_SIZES_SETTINGS& Sizes();
+
+    /*
+     * PNS_ROUTER_IFACE implementation
+     */
+
+    // Snapping
+    virtual bool SnappingEnabled() const;
+    virtual const VECTOR2I SnapToItem( PNS_ITEM* aItem, VECTOR2I aP, bool& aSplitsSegment );
 
     // Debugging
     virtual void DisplayDebugLine( const SHAPE_LINE_CHAIN& aLine, int aType = 0, int aWidth = 0 );

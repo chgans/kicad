@@ -61,7 +61,7 @@ bool PNS_MEANDER_SKEW_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
     m_currentNode = NULL;
     m_currentStart = p;
 
-    m_world = Router()->GetWorld( )->Branch();
+    m_world = GetInitialWorld()->Branch();
     m_originLine = m_world->AssembleLine( m_initialSegment );
 
     PNS_TOPOLOGY topo( Router(), m_world );

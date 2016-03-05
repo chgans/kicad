@@ -74,7 +74,7 @@ bool PNS_MEANDER_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
     m_currentNode = NULL;
     m_currentStart = p;
 
-    m_world = Router()->GetWorld()->Branch();
+    m_world = GetInitialWorld()->Branch();
     m_originLine = m_world->AssembleLine( m_initialSegment );
 
     PNS_TOPOLOGY topo( Router(), m_world );
@@ -118,7 +118,7 @@ bool PNS_MEANDER_PLACER::doMove( const VECTOR2I& aP, PNS_ITEM* aEndItem, int aTa
     if( m_currentNode )
         delete m_currentNode;
 
-    m_currentNode = m_world->Branch();
+    m_currentNode = GetInitialWorld()->Branch();
 
     cutTunedLine( m_originLine.CLine(), m_currentStart, aP, pre, tuned, post );
 
@@ -199,7 +199,7 @@ bool PNS_MEANDER_PLACER::FixRoute( const VECTOR2I& aP, PNS_ITEM* aEndItem )
     m_currentTrace = PNS_LINE( m_originLine, m_finalShape );
     m_currentNode->Add( &m_currentTrace );
 
-    Router()->CommitRouting( m_currentNode );
+    setResultingWorld( m_currentNode );
     return true;
 }
 

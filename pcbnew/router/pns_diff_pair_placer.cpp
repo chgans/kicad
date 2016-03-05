@@ -69,13 +69,6 @@ PNS_DIFF_PAIR_PLACER::~PNS_DIFF_PAIR_PLACER()
         delete m_shove;
 }
 
-
-void PNS_DIFF_PAIR_PLACER::setWorld( PNS_NODE* aWorld )
-{
-    m_world = aWorld;
-}
-
-
 const PNS_VIA PNS_DIFF_PAIR_PLACER::makeVia( const VECTOR2I& aP, int aNet )
 {
     const PNS_LAYERSET layers( SizeSettings().GetLayerTop(), SizeSettings().GetLayerBottom() );
@@ -524,7 +517,6 @@ bool PNS_DIFF_PAIR_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
         return false;
     }
 
-    m_currentNode = Router()->GetWorld();
 
     if( !findDpPrimitivePair( aP, aStartItem, m_start ) )
     {
@@ -538,8 +530,8 @@ bool PNS_DIFF_PAIR_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
     m_netN = m_start.PrimN()->Net();
 
     int clearance = std::min( SizeSettings().DiffPairGap(), SizeSettings().DiffPairViaGap() );
-    if ( clearance > m_currentNode->GetClearance( m_netP ) ||
-         clearance > m_currentNode->GetClearance( m_netN ) )
+    if ( clearance > GetInitialWorld()->GetClearance( m_netP ) ||
+         clearance > GetInitialWorld()->GetClearance( m_netN ) )
     {
         SetFailureReason( _( "Current track/via gap setting violates "
                              "design rules for this net." ) );
@@ -571,15 +563,13 @@ void PNS_DIFF_PAIR_PLACER::initPlacement( bool aSplitSeg )
     m_currentEndItem = NULL;
     m_startDiagonal = m_initialDiagonal;
 
-    PNS_NODE* world = Router()->GetWorld();
+    PNS_NODE* world = GetInitialWorld();
 
-    world->KillChildren();
-    PNS_NODE* rootNode = world->Branch();
-
-    setWorld( rootNode );
+    world->KillChildren(); // Why is this needed?
+    m_world = world->Branch();
 
     m_lastNode = NULL;
-    m_currentNode = rootNode;
+    m_currentNode = m_world;
     m_currentMode = RoutingSettings().Mode();
 
     if( m_shove )
@@ -731,7 +721,7 @@ bool PNS_DIFF_PAIR_PLACER::FixRoute( const VECTOR2I& aP, PNS_ITEM* aEndItem )
 
     m_prevPair = m_currentTrace.EndingPrimitives();
 
-    Router()->CommitRouting( m_lastNode );
+    setResultingWorld( m_lastNode );
 
     m_lastNode = NULL;
     m_placingVia = false;

@@ -782,7 +782,7 @@ void PNS_LINE_PLACER::initPlacement( bool aSplitSeg )
     m_p_start = m_currentStart;
     m_direction = m_initial_direction;
 
-    PNS_NODE* world = Router()->GetWorld();
+    PNS_NODE* world = GetInitialWorld();
 
     world->KillChildren();
     PNS_NODE* rootNode = world->Branch();
@@ -870,7 +870,7 @@ bool PNS_LINE_PLACER::FixRoute( const VECTOR2I& aP, PNS_ITEM* aEndItem )
         if( pl.EndsWithVia() )
         {
             m_lastNode->Add( pl.Via().Clone() );
-            Router()->CommitRouting( m_lastNode );
+            setResultingWorld( m_lastNode );
 
             m_lastNode = NULL;
             m_currentNode = NULL;
@@ -914,7 +914,7 @@ bool PNS_LINE_PLACER::FixRoute( const VECTOR2I& aP, PNS_ITEM* aEndItem )
     if( realEnd )
         simplifyNewLine( m_lastNode, lastSeg );
 
-    Router()->CommitRouting( m_lastNode );
+    setResultingWorld( m_lastNode );
 
     m_lastNode = NULL;
     m_currentNode = NULL;

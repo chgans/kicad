@@ -44,12 +44,30 @@ public:
      PNS_DRAGGER( PNS_ROUTER_IFACE* aRouter );
     ~PNS_DRAGGER();
 
-    /**
-     * Function SetWorld()
-     *
-     * Sets the board to work on.
-     */
-    void SetWorld( PNS_NODE* aWorld );
+     /**
+      * Function SetInitialWorld
+      *
+      * Set the world this algorithm will work on.
+      *
+      * @todo param should be const
+      */
+     void SetInitialWorld( /*const*/ PNS_NODE *aWorld)
+     {
+         m_initialWorld = aWorld;
+     }
+
+     /**
+      * Function GetResultingWorld
+      *
+      * Returns the resulting world this algorithm made.
+      * Valid only after fixRoute() has deen called.
+      *
+      * @todo Should returns const
+      */
+     /*const*/ PNS_NODE *GetResultingWorld() const
+     {
+         return m_resultingWorld;
+     }
 
     /**
      * Function Start()
@@ -106,7 +124,17 @@ public:
 
 
 protected:
-    void SetFailureReason(const wxString &aReason)
+    /*const*/ PNS_NODE *GetInitialWorld() const
+    {
+        return m_initialWorld;
+    }
+
+    void setResultingWorld( /*const*/ PNS_NODE *aWorld )
+    {
+        m_resultingWorld = aWorld;
+    }
+
+    void SetFailureReason( const wxString &aReason )
     {
         m_failureReason = aReason;
     }
@@ -143,6 +171,8 @@ private:
     PNS_VIA*    m_initialVia;
     PNS_ITEMSET m_draggedItems;
     wxString m_failureReason;
+    /*const*/ PNS_NODE *m_initialWorld;
+    /*const*/ PNS_NODE *m_resultingWorld;
 };
 
 #endif

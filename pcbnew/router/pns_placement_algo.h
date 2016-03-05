@@ -42,9 +42,35 @@ class PNS_PLACEMENT_ALGO : public PNS_ALGO_BASE
 {
 public:
     PNS_PLACEMENT_ALGO( PNS_ROUTER_IFACE* aRouter ) :
-        PNS_ALGO_BASE( aRouter ) {};
+        PNS_ALGO_BASE( aRouter ), m_initialWorld( NULL ), m_resultingWorld( NULL )
+    {}
 
-    virtual ~PNS_PLACEMENT_ALGO () {};
+    virtual ~PNS_PLACEMENT_ALGO () {}
+
+    /**
+     * Function SetInitialWorld
+     *
+     * Set the world this algorithm will work on.
+     *
+     * @todo param should be const
+     */
+    void SetInitialWorld( /*const*/ PNS_NODE *aWorld)
+    {
+        m_initialWorld = aWorld;
+    }
+
+    /**
+     * Function GetResultingWorld
+     *
+     * Returns the resulting world this algorithm made.
+     * Valid only after fixRoute() has deen called.
+     *
+     * @todo Should returns const
+     */
+    /*const*/ PNS_NODE *GetResultingWorld() const
+    {
+        return m_resultingWorld;
+    }
 
     /**
      * Function Start()
@@ -68,12 +94,10 @@ public:
     /**
      * Function FixRoute()
      *
-     * Commits the currently routed items to the parent node, taking
-     * aP as the final end point and aEndItem as the final anchor (if provided).
-     * @return true, if route has been commited. May return false if the routing
-     * result is violating design rules - in such case, the track is only committed
-     * if Settings.CanViolateDRC() is on.
-     * @return true on success and false in case of failure (use failureReason() for details)
+     *
+     * Finishes up the currently routed primitives, making the resulting world
+     * ready for commit.
+     * @return true if route can be commited without violating the DRC.
      */
     virtual bool FixRoute( const VECTOR2I& aP, PNS_ITEM* aEndItem ) = 0;
 
@@ -193,8 +217,20 @@ protected:
         m_failureReason.Clear();
     }
 
+    /*const*/ PNS_NODE *GetInitialWorld() const
+    {
+        return m_initialWorld;
+    }
+
+    void setResultingWorld( /*const*/ PNS_NODE *aWorld )
+    {
+        m_resultingWorld = aWorld;
+    }
+
 private:
     wxString m_failureReason;
+    /*const*/ PNS_NODE *m_initialWorld;
+    /*const*/ PNS_NODE *m_resultingWorld;
 };
 
 #endif

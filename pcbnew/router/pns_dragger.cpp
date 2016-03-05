@@ -46,12 +46,6 @@ PNS_DRAGGER::~PNS_DRAGGER()
 }
 
 
-void PNS_DRAGGER::SetWorld( PNS_NODE* aWorld )
-{
-    m_world = aWorld;
-}
-
-
 bool PNS_DRAGGER::startDragSegment( const VECTOR2D& aP, PNS_SEGMENT* aSeg )
 {
     int w2 = aSeg->Width() / 2;
@@ -291,7 +285,7 @@ bool PNS_DRAGGER::FixRoute()
     ClearFailureReason();
     if( m_dragStatus )
     {
-        Router()->CommitRouting( CurrentNode() );
+        setResultingWorld( CurrentNode() );
         return true;
     }
 

@@ -84,7 +84,7 @@ bool PNS_DP_MEANDER_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
     m_currentNode=NULL;
     m_currentStart = p;
 
-    m_world = Router()->GetWorld()->Branch();
+    m_world = GetInitialWorld()->Branch();
 
     PNS_TOPOLOGY topo( Router(), m_world );
 
@@ -311,7 +311,7 @@ bool PNS_DP_MEANDER_PLACER::FixRoute( const VECTOR2I& aP, PNS_ITEM* aEndItem )
     m_currentNode->Add( &lP );
     m_currentNode->Add( &lN );
 
-    Router()->CommitRouting( m_currentNode );
+    setResultingWorld( m_currentNode );
 
     return true;
 }
