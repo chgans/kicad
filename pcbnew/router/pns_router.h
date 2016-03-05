@@ -81,10 +81,6 @@ public:
     virtual ~PNS_ROUTER_IFACE()
     {}
 
-    // Snapping (Only used by line and pair placers in their Start() )
-    virtual bool SnappingEnabled() const = 0;
-    virtual const VECTOR2I SnapToItem( PNS_ITEM* aItem, VECTOR2I aP, bool& aSplitsSegment ) = 0;
-
     // Debugging
     virtual void DisplayDebugLine( const SHAPE_LINE_CHAIN& aLine, int aType = 0, int aWidth = 0 ) = 0;
     virtual void DisplayDebugPoint( const VECTOR2I aPos, int aType = 0 ) = 0;
@@ -210,13 +206,14 @@ public:
     virtual PNS_ROUTING_SETTINGS& Settings();
     virtual PNS_SIZES_SETTINGS& Sizes();
 
-    /*
-     * PNS_ROUTER_IFACE implementation
-     */
 
     // Snapping
     virtual bool SnappingEnabled() const;
     virtual const VECTOR2I SnapToItem( PNS_ITEM* aItem, VECTOR2I aP, bool& aSplitsSegment );
+
+    /*
+     * PNS_ROUTER_IFACE implementation
+     */
 
     // Debugging
     virtual void DisplayDebugLine( const SHAPE_LINE_CHAIN& aLine, int aType = 0, int aWidth = 0 );

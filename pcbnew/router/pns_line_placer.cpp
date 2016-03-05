@@ -51,7 +51,6 @@ PNS_LINE_PLACER::PNS_LINE_PLACER( PNS_ROUTER_IFACE* aRouter ) :
     m_currentMode = RM_MarkObstacles;
     m_startItem = NULL;
     m_chainedPlacement = false;
-    m_splitSeg = false;
     m_orthoMode = false;
 }
 
@@ -723,8 +722,7 @@ bool PNS_LINE_PLACER::SetLayer( int aLayer )
     }
     else if( !m_startItem || ( m_startItem->OfKind( PNS_ITEM::VIA ) && m_startItem->Layers().Overlaps( aLayer ) ) ) {
         m_currentLayer = aLayer;
-        m_splitSeg = false;
-        initPlacement ( m_splitSeg );
+        initPlacement ();
         Move ( m_currentEnd, NULL );
         return true;
     }
@@ -732,18 +730,12 @@ bool PNS_LINE_PLACER::SetLayer( int aLayer )
     return false;
 }
 
-
 bool PNS_LINE_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
 {
     VECTOR2I p( aP );
 
     static int unknowNetIdx = 0;    // -10000;
     int net = -1;
-
-    bool splitSeg = false;
-
-    if( Router()->SnappingEnabled() )
-        p = Router()->SnapToItem( aStartItem, aP, splitSeg );
 
     if( !aStartItem || aStartItem->Net() < 0 )
         net = unknowNetIdx--;
@@ -756,15 +748,14 @@ bool PNS_LINE_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
     m_startItem = aStartItem;
     m_placingVia = false;
     m_chainedPlacement = false;
-    m_splitSeg = splitSeg;
 
     setInitialDirection( RoutingSettings().InitialDirection() );
 
-    initPlacement( m_splitSeg );
+    initPlacement();
     return true;
 }
 
-void PNS_LINE_PLACER::initPlacement( bool aSplitSeg )
+void PNS_LINE_PLACER::initPlacement()
 {
     m_idle = false;
 
@@ -787,7 +778,7 @@ void PNS_LINE_PLACER::initPlacement( bool aSplitSeg )
     world->KillChildren();
     PNS_NODE* rootNode = world->Branch();
 
-    if( aSplitSeg )
+    if( !IsOnSegmentExtremities( m_currentStart, m_startItem ) )
         splitAdjacentSegments( rootNode, m_startItem, m_currentStart );
 
     setWorld( rootNode );
@@ -926,7 +917,6 @@ bool PNS_LINE_PLACER::FixRoute( const VECTOR2I& aP, PNS_ITEM* aEndItem )
         m_startItem = NULL;
         m_placingVia = false;
         m_chainedPlacement = !pl.EndsWithVia();
-        m_splitSeg = false;
         initPlacement();
     }
     else
@@ -1012,7 +1002,7 @@ void PNS_LINE_PLACER::SizeSettingsChanged()
 {
     if( !m_idle )
     {
-        initPlacement( m_splitSeg );
+        initPlacement();
     }
 }
 

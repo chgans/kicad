@@ -389,7 +389,7 @@ bool PNS_DIFF_PAIR_PLACER::SetLayer( int aLayer )
     {
         m_currentLayer = aLayer;
         m_start = *m_prevPair;
-        initPlacement( false );
+        initPlacement();
         Move( m_currentEnd, NULL );
         return true;
     }
@@ -501,14 +501,7 @@ int PNS_DIFF_PAIR_PLACER::gap() const
 
 bool PNS_DIFF_PAIR_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
 {
-    VECTOR2I p( aP );
-
     ClearFailureReason();
-
-    bool split;
-
-    if( Router()->SnappingEnabled() )
-        p = Router()->SnapToItem( aStartItem, aP, split );
 
     if( !aStartItem )
     {
@@ -545,18 +538,18 @@ bool PNS_DIFF_PAIR_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
         return false;
     }
 
-    m_currentStart = p;
-    m_currentEnd = p;
+    m_currentStart = aP;
+    m_currentEnd = aP;
     m_placingVia = false;
     m_chainedPlacement = false;
 
-    initPlacement( false );
+    initPlacement();
 
     return true;
 }
 
 
-void PNS_DIFF_PAIR_PLACER::initPlacement( bool aSplitSeg )
+void PNS_DIFF_PAIR_PLACER::initPlacement()
 {
     m_idle = false;
     m_orthoMode = false;

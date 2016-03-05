@@ -757,7 +757,12 @@ bool PNS_ROUTER::StartRouting( const VECTOR2I& aP, PNS_ITEM* aStartItem, int aLa
     m_placer->UpdateSizeSettings( m_sizes );
     m_placer->SetLayer( aLayer );
 
-    bool rv = m_placer->Start( aP, aStartItem );
+    VECTOR2I startPoint = aP;
+    bool dummy;
+    if (SnappingEnabled())
+        startPoint = SnapToItem( aStartItem, startPoint, dummy);
+
+    bool rv = m_placer->Start( startPoint, aStartItem );
     SetFailureReason(m_placer->FailureReason());
 
     if( !rv )

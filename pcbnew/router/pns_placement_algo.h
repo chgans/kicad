@@ -25,6 +25,7 @@
 
 #include "pns_algo_base.h"
 #include "pns_itemset.h"
+#include "pns_segment.h"
 
 class PNS_ROUTER_IFACE;
 class PNS_ITEM;
@@ -225,6 +226,18 @@ protected:
     void setResultingWorld( /*const*/ PNS_NODE *aWorld )
     {
         m_resultingWorld = aWorld;
+    }
+
+    ///> returm true if aItem is a segment item and aAnchor is on one of its extremities
+    bool IsOnSegmentExtremities( const VECTOR2I& aAnchor, PNS_ITEM* aItem )
+    {
+        if (!aItem || aItem->Kind() != PNS_ITEM::SEGMENT)
+            return false;
+
+        PNS_SEGMENT* segmentItem = static_cast<PNS_SEGMENT*>( aItem );
+        const SEG& segment = segmentItem->Seg();
+
+        return (aAnchor == segment.A || aAnchor == segment.B );
     }
 
 private:

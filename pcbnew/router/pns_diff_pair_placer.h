@@ -181,11 +181,11 @@ private:
     void setWorld( PNS_NODE* aWorld );
 
     /**
-     * Function startPlacement()
+     * Function initPlacement()
      *
-     * Initializes placement of a new line with given parameters.
+     * Initializes placement of a new line.
      */
-    void initPlacement( bool aSplitSeg = false );
+    void initPlacement();
 
     /**
      * Function setInitialDirection()
