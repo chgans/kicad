@@ -22,6 +22,8 @@
 #define __PNS_ALGO_BASE_H
 
 #include "pns_routing_settings.h"
+#include "pns_sizes_settings.h"
+#include "pns_meander.h" // for meander settings
 
 class PNS_ROUTER_IFACE;
 class PNS_LOGGER;
@@ -47,14 +49,64 @@ public:
         return m_router;
     }
 
-    ///> Returns current router settings
-    PNS_ROUTING_SETTINGS& Settings() const;
-
     ///> Returns the logger object, allowing to dump geometry to a file.
     virtual PNS_LOGGER* Logger();
 
+    /**
+     * Function UpdateSizeSettings()
+     *
+     * Performs on-the-fly update of the width, via diameter & drill size from
+     * a settings class. Used to dynamically change these parameters as
+     * the track is routed.
+     */
+    void UpdateSizeSettings( const PNS_SIZES_SETTINGS& aSettings )
+    {
+        m_sizeSettings = aSettings;
+        SizeSettingsChanged();
+    }
+
+    const PNS_SIZES_SETTINGS &SizeSettings() const
+    {
+        return m_sizeSettings;
+    }
+
+    void UpdateRoutingSettings( const PNS_ROUTING_SETTINGS& aSettings )
+    {
+        m_routingSettings = aSettings;
+        RoutingSettingsChanged();
+    }
+
+    const PNS_ROUTING_SETTINGS &RoutingSettings() const
+    {
+        return m_routingSettings;
+    }
+
+    void UpdateMeanderSettings( const PNS_MEANDER_SETTINGS& aSettings )
+    {
+        m_meanderSettings = aSettings;
+        MeanderSettingsChanged();
+    }
+
+    const PNS_MEANDER_SETTINGS &MeanderSettings() const
+    {
+        return m_meanderSettings;
+    }
+
+protected:
+    virtual void RoutingSettingsChanged()
+    {}
+
+    virtual void SizeSettingsChanged()
+    {}
+
+    virtual void MeanderSettingsChanged()
+    {}
+
 private:
     PNS_ROUTER_IFACE* m_router;
+    PNS_ROUTING_SETTINGS m_routingSettings;
+    PNS_SIZES_SETTINGS m_sizeSettings;
+    PNS_MEANDER_SETTINGS m_meanderSettings;
 };
 
 #endif

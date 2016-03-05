@@ -71,9 +71,9 @@ void PNS_LINE_PLACER::setWorld( PNS_NODE* aWorld )
 
 const PNS_VIA PNS_LINE_PLACER::makeVia( const VECTOR2I& aP )
 {
-    const PNS_LAYERSET layers( m_sizes.GetLayerTop(), m_sizes.GetLayerBottom() );
+    const PNS_LAYERSET layers( SizeSettings().GetLayerTop(), SizeSettings().GetLayerBottom() );
 
-    return PNS_VIA( aP, layers, m_sizes.ViaDiameter(), m_sizes.ViaDrill(), -1, m_sizes.ViaType() );
+    return PNS_VIA( aP, layers, SizeSettings().ViaDiameter(), SizeSettings().ViaDrill(), -1, SizeSettings().ViaType() );
 }
 
 
@@ -367,11 +367,11 @@ bool PNS_LINE_PLACER::rhWalkOnly( const VECTOR2I& aP, PNS_LINE& aNewHead )
     PNS_WALKAROUND walkaround( m_currentNode, Router() );
 
     walkaround.SetSolidsOnly( false );
-    walkaround.SetIterationLimit( Settings().WalkaroundIterationLimit() );
+    walkaround.SetIterationLimit( RoutingSettings().WalkaroundIterationLimit() );
 
     PNS_WALKAROUND::WALKAROUND_STATUS wf = walkaround.Route( initTrack, walkFull, false );
 
-    switch( Settings().OptimizerEffort() )
+    switch( RoutingSettings().OptimizerEffort() )
     {
     case OE_LOW:
         effort = 0;
@@ -383,7 +383,7 @@ bool PNS_LINE_PLACER::rhWalkOnly( const VECTOR2I& aP, PNS_LINE& aNewHead )
         break;
     }
 
-    if( Settings().SmartPads() )
+    if( RoutingSettings().SmartPads() )
         effort |= PNS_OPTIMIZER::SMART_PADS;
 
     if( wf == PNS_WALKAROUND::STUCK )
@@ -605,7 +605,7 @@ void PNS_LINE_PLACER::routeStep( const VECTOR2I& aP )
 
     for( i = 0; i < n_iter; i++ )
     {
-        if( !go_back && Settings().FollowMouse() )
+        if( !go_back && RoutingSettings().FollowMouse() )
             reduceTail( aP );
 
         go_back = false;
@@ -616,7 +616,7 @@ void PNS_LINE_PLACER::routeStep( const VECTOR2I& aP )
         if( !new_head.Is45Degree() )
             fail = true;
 
-        if( !Settings().FollowMouse() )
+        if( !RoutingSettings().FollowMouse() )
             return;
 
         m_head = new_head;
@@ -758,7 +758,7 @@ bool PNS_LINE_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
     m_chainedPlacement = false;
     m_splitSeg = splitSeg;
 
-    setInitialDirection( Settings().InitialDirection() );
+    setInitialDirection( RoutingSettings().InitialDirection() );
 
     initPlacement( m_splitSeg );
     return true;
@@ -774,8 +774,8 @@ void PNS_LINE_PLACER::initPlacement( bool aSplitSeg )
     m_tail.SetNet( m_currentNet );
     m_head.SetLayer( m_currentLayer );
     m_tail.SetLayer( m_currentLayer );
-    m_head.SetWidth( m_sizes.TrackWidth() );
-    m_tail.SetWidth( m_sizes.TrackWidth() );
+    m_head.SetWidth( SizeSettings().TrackWidth() );
+    m_tail.SetWidth( SizeSettings().TrackWidth() );
     m_head.RemoveVia();
     m_tail.RemoveVia();
 
@@ -797,7 +797,7 @@ void PNS_LINE_PLACER::initPlacement( bool aSplitSeg )
 
     m_lastNode = NULL;
     m_currentNode = m_world;
-    m_currentMode = Settings().Mode();
+    m_currentMode = RoutingSettings().Mode();
 
     if( m_shove )
         delete m_shove;
@@ -842,7 +842,7 @@ bool PNS_LINE_PLACER::Move( const VECTOR2I& aP, PNS_ITEM* aEndItem )
     {
         splitAdjacentSegments( m_lastNode, aEndItem, current.CPoint( -1 ) );
 
-        if( Settings().RemoveLoops() )
+        if( RoutingSettings().RemoveLoops() )
             removeLoops( m_lastNode, current );
     }
 
@@ -859,7 +859,7 @@ bool PNS_LINE_PLACER::FixRoute( const VECTOR2I& aP, PNS_ITEM* aEndItem )
     PNS_LINE pl = Trace();
 
     if( m_currentMode == RM_MarkObstacles &&
-        !Settings().CanViolateDRC() &&
+        !RoutingSettings().CanViolateDRC() &&
         m_world->CheckColliding( &pl ) )
             return false;
 
@@ -1008,10 +1008,8 @@ void PNS_LINE_PLACER::simplifyNewLine( PNS_NODE* aNode, PNS_SEGMENT* aLatest )
 }
 
 
-void PNS_LINE_PLACER::UpdateSizes( const PNS_SIZES_SETTINGS& aSizes )
+void PNS_LINE_PLACER::SizeSettingsChanged()
 {
-    m_sizes = aSizes;
-
     if( !m_idle )
     {
         initPlacement( m_splitSeg );
@@ -1045,7 +1043,7 @@ bool PNS_LINE_PLACER::buildInitialLine( const VECTOR2I& aP, PNS_LINE& aHead )
     }
     else
     {
-        if( Settings().FreeAngleMode() && Settings().Mode() == RM_MarkObstacles )
+        if( RoutingSettings().FreeAngleMode() && RoutingSettings().Mode() == RM_MarkObstacles )
         {
             l = SHAPE_LINE_CHAIN( m_p_start, aP );
         }

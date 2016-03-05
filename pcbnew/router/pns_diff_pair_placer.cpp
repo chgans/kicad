@@ -78,9 +78,9 @@ void PNS_DIFF_PAIR_PLACER::setWorld( PNS_NODE* aWorld )
 
 const PNS_VIA PNS_DIFF_PAIR_PLACER::makeVia( const VECTOR2I& aP, int aNet )
 {
-    const PNS_LAYERSET layers( m_sizes.GetLayerTop(), m_sizes.GetLayerBottom() );
+    const PNS_LAYERSET layers( SizeSettings().GetLayerTop(), SizeSettings().GetLayerBottom() );
 
-    PNS_VIA v( aP, layers, m_sizes.ViaDiameter(), m_sizes.ViaDrill(), -1, m_sizes.ViaType() );
+    PNS_VIA v( aP, layers, SizeSettings().ViaDiameter(), SizeSettings().ViaDrill(), -1, SizeSettings().ViaType() );
     v.SetNet( aNet );
 
     return v;
@@ -130,7 +130,7 @@ bool PNS_DIFF_PAIR_PLACER::propagateDpHeadForces ( const VECTOR2I& aP, VECTOR2I&
     else
     {
         virtHead.SetLayer( m_currentLayer );
-        virtHead.SetDiameter( m_sizes.DiffPairGap() + 2 * m_sizes.TrackWidth() );
+        virtHead.SetDiameter( SizeSettings().DiffPairGap() + 2 * SizeSettings().TrackWidth() );
     }
 
     VECTOR2I lead( 0, 0 );// = aP - m_currentStart ;
@@ -166,7 +166,7 @@ bool PNS_DIFF_PAIR_PLACER::attemptWalk ( PNS_NODE* aNode, PNS_DIFF_PAIR* aCurren
     Router()->GetClearanceFunc()->OverrideClearance( true, aCurrent->NetP(), aCurrent->NetN(), aCurrent->Gap() );
 
     walkaround.SetSolidsOnly( aSolidsOnly );
-    walkaround.SetIterationLimit( Settings().WalkaroundIterationLimit() );
+    walkaround.SetIterationLimit( RoutingSettings().WalkaroundIterationLimit() );
 
     PNS_SHOVE shove( aNode, Router() );
     PNS_LINE walkP, walkN;
@@ -495,13 +495,13 @@ bool PNS_DIFF_PAIR_PLACER::findDpPrimitivePair( const VECTOR2I& aP, PNS_ITEM* aR
 
 int PNS_DIFF_PAIR_PLACER::viaGap() const
 {
-    return m_sizes.DiffPairViaGap();
+    return SizeSettings().DiffPairViaGap();
 }
 
 
 int PNS_DIFF_PAIR_PLACER::gap() const
 {
-    return m_sizes.DiffPairGap() + m_sizes.DiffPairWidth();
+    return SizeSettings().DiffPairGap() + SizeSettings().DiffPairWidth();
 }
 
 
@@ -536,7 +536,7 @@ bool PNS_DIFF_PAIR_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
     m_netP = m_start.PrimP()->Net();
     m_netN = m_start.PrimN()->Net();
 
-    int clearance = std::min( m_sizes.DiffPairGap(), m_sizes.DiffPairViaGap() );
+    int clearance = std::min( SizeSettings().DiffPairGap(), SizeSettings().DiffPairViaGap() );
     if (!Router()->ValidateClearanceForNet( clearance, m_netP ) ||
             !Router()->ValidateClearanceForNet( clearance, m_netN ))
     {
@@ -545,7 +545,7 @@ bool PNS_DIFF_PAIR_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
         return false;
     }
 
-    if( !Router()->ValidateTrackWidth( m_sizes.DiffPairWidth() ) )
+    if( !Router()->ValidateTrackWidth( SizeSettings().DiffPairWidth() ) )
     {
         SetFailureReason( _( "Current track width setting violates design rules." ) );
         return false;
@@ -578,7 +578,7 @@ void PNS_DIFF_PAIR_PLACER::initPlacement( bool aSplitSeg )
 
     m_lastNode = NULL;
     m_currentNode = rootNode;
-    m_currentMode = Settings().Mode();
+    m_currentMode = RoutingSettings().Mode();
 
     if( m_shove )
         delete m_shove;
@@ -615,7 +615,7 @@ bool PNS_DIFF_PAIR_PLACER::routeHead( const VECTOR2I& aP )
         if( !propagateDpHeadForces( aP, fp ) )
             return false;
 
-        gwsTarget.SetFitVias( m_placingVia, m_sizes.ViaDiameter(), viaGap() );
+        gwsTarget.SetFitVias( m_placingVia, SizeSettings().ViaDiameter(), viaGap() );
         gwsTarget.BuildForCursor( fp );
         gwsTarget.BuildOrthoProjections( gwsEntry, fp, m_orthoMode ? 200 : -200 );
         m_snapOnTarget = false;
@@ -628,8 +628,8 @@ bool PNS_DIFF_PAIR_PLACER::routeHead( const VECTOR2I& aP )
     if ( gwsEntry.FitGateways( gwsEntry, gwsTarget, m_startDiagonal, m_currentTrace ) )
     {
         m_currentTrace.SetNets( m_netP, m_netN );
-        m_currentTrace.SetWidth( m_sizes.DiffPairWidth() );
-        m_currentTrace.SetGap( m_sizes.DiffPairGap() );
+        m_currentTrace.SetWidth( SizeSettings().DiffPairWidth() );
+        m_currentTrace.SetGap( SizeSettings().DiffPairGap() );
 
         if( m_placingVia )
         {
@@ -668,17 +668,14 @@ bool PNS_DIFF_PAIR_PLACER::Move( const VECTOR2I& aP , PNS_ITEM* aEndItem )
 }
 
 
-void PNS_DIFF_PAIR_PLACER::UpdateSizes( const PNS_SIZES_SETTINGS& aSizes )
+void PNS_DIFF_PAIR_PLACER::SizeSettingsChanged()
 {
-    m_sizes = aSizes;
-
     if( !m_idle )
     {
         initPlacement();
         Move( m_currentEnd, NULL );
     }
 }
-
 
 bool PNS_DIFF_PAIR_PLACER::FixRoute( const VECTOR2I& aP, PNS_ITEM* aEndItem )
 {

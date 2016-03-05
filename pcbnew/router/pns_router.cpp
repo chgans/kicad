@@ -651,7 +651,7 @@ bool PNS_ROUTER::StartRouting( const VECTOR2I& aP, PNS_ITEM* aStartItem, int aLa
         return false;
     }
 
-    m_placer->UpdateSizes ( m_sizes );
+    m_placer->UpdateSizeSettings( m_sizes );
     m_placer->SetLayer( aLayer );
 
     bool rv = m_placer->Start( aP, aStartItem );
@@ -981,7 +981,7 @@ void PNS_ROUTER::UpdateSizes ( const PNS_SIZES_SETTINGS& aSizes )
     // Change track/via size settings
     if( m_state == ROUTE_TRACK)
     {
-        m_placer->UpdateSizes( m_sizes );
+        m_placer->UpdateSizeSettings( m_sizes );
     }
 }
 

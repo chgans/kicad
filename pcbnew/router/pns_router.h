@@ -109,10 +109,6 @@ public:
     virtual int PairingPolarity( int aNet ) const = 0;
     virtual int GetPairedNet( int aNet ) const = 0;
 
-    // Settings (FIXME: should be const &() const)
-    virtual PNS_ROUTING_SETTINGS& Settings() = 0;
-    virtual PNS_SIZES_SETTINGS& Sizes() = 0;
-
     // Debugging
     virtual void DisplayDebugLine( const SHAPE_LINE_CHAIN& aLine, int aType = 0, int aWidth = 0 ) = 0;
     virtual void DisplayDebugPoint( const VECTOR2I aPos, int aType = 0 ) = 0;

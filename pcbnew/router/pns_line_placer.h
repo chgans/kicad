@@ -26,7 +26,6 @@
 #include <geometry/shape.h>
 #include <geometry/shape_line_chain.h>
 
-#include "pns_sizes_settings.h"
 #include "pns_line.h"
 #include "pns_placement_algo.h"
 
@@ -34,7 +33,6 @@ class PNS_ROUTER_IFACE;
 class PNS_SHOVE;
 class PNS_OPTIMIZER;
 class PNS_VIA;
-class PNS_SIZES_SETTINGS;
 class PNS_NODE;
 
 /**
@@ -167,15 +165,6 @@ public:
      */
     void FlipPosture();
 
-    /**
-     * Function UpdateSizes()
-     *
-     * Performs on-the-fly update of the width, via diameter & drill size from
-     * a settings class. Used to dynamically change these parameters as
-     * the track is routed.
-     */
-    void UpdateSizes( const PNS_SIZES_SETTINGS& aSizes );
-
     void SetOrthoMode( bool aOrthoMode );
 
     bool IsPlacingVia() const { return m_placingVia; }
@@ -184,6 +173,8 @@ public:
 
     PNS_LOGGER* Logger();
 
+protected:
+    void SizeSettingsChanged();
 
 private:
     /**
@@ -370,8 +361,6 @@ private:
 
     ///> Postprocessed world state (including marked collisions & removed loops)
     PNS_NODE* m_lastNode;
-
-    PNS_SIZES_SETTINGS m_sizes;
 
     ///> Are we placing a via?
     bool m_placingVia;

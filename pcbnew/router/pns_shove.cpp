@@ -444,7 +444,7 @@ PNS_SHOVE::SHOVE_STATUS PNS_SHOVE::onCollidingSolid( PNS_LINE& aCurrent, PNS_ITE
     for( int attempt = 0; attempt < 2; attempt++ )
     {
 
-        if( attempt == 1 || Settings().JumpOverObstacles() )
+        if( attempt == 1 || RoutingSettings().JumpOverObstacles() )
         {
             nextRank = currentRank - 1;
             walkaround.SetSingleDirection( true );
@@ -1002,8 +1002,8 @@ PNS_SHOVE::SHOVE_STATUS PNS_SHOVE::shoveMainLoop()
     TRACE( 1, "ShoveStart [root: %d jts, current: %d jts]", m_root->JointCount() %
            m_currentNode->JointCount() );
 
-    int iterLimit = Settings().ShoveIterationLimit();
-    int timeLimit = Settings().ShoveTimeLimit();
+    int iterLimit = RoutingSettings().ShoveIterationLimit();
+    int timeLimit = RoutingSettings().ShoveTimeLimit();
     TIME_LIMIT timer(timeLimit);
 
     m_iter = 0;
@@ -1280,7 +1280,7 @@ void PNS_SHOVE::runOptimizer( PNS_NODE* aNode )
     PNS_OPTIMIZER optimizer( aNode );
     int optFlags = 0, n_passes = 0;
 
-    PNS_OPTIMIZATION_EFFORT effort = Settings().OptimizerEffort();
+    PNS_OPTIMIZATION_EFFORT effort = RoutingSettings().OptimizerEffort();
 
     OPT_BOX2I area = totalAffectedArea();
 
@@ -1322,7 +1322,7 @@ void PNS_SHOVE::runOptimizer( PNS_NODE* aNode )
         break;
     }
 
-    if( Settings().SmartPads() )
+    if( RoutingSettings().SmartPads() )
         optFlags |= PNS_OPTIMIZER::SMART_PADS;
 
     optimizer.SetEffortLevel( optFlags );

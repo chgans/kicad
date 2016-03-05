@@ -21,11 +21,6 @@
 #include "pns_algo_base.h"
 #include "pns_router.h"
 
-PNS_ROUTING_SETTINGS& PNS_ALGO_BASE::Settings() const
-{
-    return m_router->Settings();
-}
-
 PNS_LOGGER *PNS_ALGO_BASE::Logger()
 {
     return NULL;

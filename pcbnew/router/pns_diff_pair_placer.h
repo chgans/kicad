@@ -33,7 +33,6 @@
 
 class PNS_ROUTER_IFACE;
 class PNS_VIA;
-class PNS_SIZES_SETTINGS;
 
 
 /**
@@ -140,20 +139,14 @@ public:
      */
     void FlipPosture();
 
-    /**
-     * Function UpdateSizes()
-     *
-     * Performs on-the-fly update of the width, via diameter & drill size from
-     * a settings class. Used to dynamically change these parameters as
-     * the track is routed.
-     */
-    void UpdateSizes( const PNS_SIZES_SETTINGS& aSizes );
-
     bool IsPlacingVia() const { return m_placingVia; }
 
     void SetOrthoMode( bool aOrthoMode );
 
     void GetModifiedNets( std::vector<int>& aNets ) const;
+
+protected:
+    void SizeSettingsChanged();
 
 private:
     int viaGap() const;
@@ -257,8 +250,6 @@ private:
 
     ///> Postprocessed world state (including marked collisions & removed loops)
     PNS_NODE* m_lastNode;
-
-    PNS_SIZES_SETTINGS m_sizes;
 
     ///> Are we placing a via?
     bool m_placingVia;

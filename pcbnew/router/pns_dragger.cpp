@@ -111,7 +111,7 @@ bool PNS_DRAGGER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
     m_shove = new PNS_SHOVE( m_world, Router() );
     m_lastNode = NULL;
     m_draggedItems.Clear();
-    m_currentMode = Settings().Mode();
+    m_currentMode = RoutingSettings().Mode();
 
     TRACE( 2, "StartDragging: item %p [kind %d]", aStartItem % aStartItem->Kind() );
 
@@ -142,7 +142,7 @@ bool PNS_DRAGGER::dragMarkObstacles( const VECTOR2I& aP )
     case SEGMENT:
     case CORNER:
     {
-        int thresh = Settings().SmoothDraggedSegments() ? m_draggedLine.Width() / 4 : 0;
+        int thresh = RoutingSettings().SmoothDraggedSegments() ? m_draggedLine.Width() / 4 : 0;
         PNS_LINE dragged( m_draggedLine );
 
         if( m_mode == SEGMENT )
@@ -172,7 +172,7 @@ bool PNS_DRAGGER::dragMarkObstacles( const VECTOR2I& aP )
     }
     }
 
-    if( Settings().CanViolateDRC() )
+    if( RoutingSettings().CanViolateDRC() )
         m_dragStatus = true;
     else
         m_dragStatus = !m_world->CheckColliding( m_draggedItems );
@@ -228,7 +228,7 @@ bool PNS_DRAGGER::dragShove( const VECTOR2I& aP )
     case SEGMENT:
     case CORNER:
     {
-        int thresh = Settings().SmoothDraggedSegments() ? m_draggedLine.Width() / 4 : 0;
+        int thresh = RoutingSettings().SmoothDraggedSegments() ? m_draggedLine.Width() / 4 : 0;
         PNS_LINE dragged( m_draggedLine );
 
         if( m_mode == SEGMENT )

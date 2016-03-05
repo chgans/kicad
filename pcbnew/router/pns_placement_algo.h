@@ -24,7 +24,6 @@
 #include <math/vector2d.h>
 
 #include "pns_algo_base.h"
-#include "pns_sizes_settings.h"
 #include "pns_itemset.h"
 
 class PNS_ROUTER_IFACE;
@@ -160,17 +159,6 @@ public:
      * Toggles the current posture (straight/diagonal) of the trace head.
      */
     virtual void FlipPosture()
-    {
-    }
-
-    /**
-     * Function UpdateSizes()
-     *
-     * Performs on-the-fly update of the width, via diameter & drill size from
-     * a settings class. Used to dynamically change these parameters as
-     * the track is routed.
-     */
-    virtual void UpdateSizes( const PNS_SIZES_SETTINGS& aSizes )
     {
     }
 
