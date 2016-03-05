@@ -106,7 +106,7 @@ PNS_PCBNEW_CLEARANCE_RESOLVER::PNS_PCBNEW_CLEARANCE_RESOLVER( PNS_ROUTER* aRoute
             continue;
 
         CLEARANCE_ENT ent;
-        ent.coupledNet = m_router->DpCoupledNet( i );
+        ent.coupledNet = m_router->GetWorld()->PairedNet( i );
 
         wxString netClassName = ni->GetClassName();
         NETCLASSPTR nc = brd->GetDesignSettings().m_NetClasses.Find( netClassName );
@@ -185,6 +185,90 @@ void PNS_PCBNEW_CLEARANCE_RESOLVER::Override( bool aEnable, int aNetA, int aNetB
     m_overrideClearance = aClearance;
 }
 
+class PCBNEW_PAIRING_RESOLVER: public PNS_PAIRING_RESOLVER
+{
+public:
+    PCBNEW_PAIRING_RESOLVER( BOARD *aBoard ):
+        PNS_PAIRING_RESOLVER(), m_board( aBoard )
+    {}
+
+    ~PCBNEW_PAIRING_RESOLVER()
+    {}
+
+    bool IsPairedNet( int aNet ) const;
+    int PairingPolarity( int aNet ) const;
+    int PairedNet( int aNet ) const;
+
+private:
+    int MatchDpSuffix(wxString aNetName, wxString &aComplementNet, wxString &aBaseDpName) const;
+    BOARD *m_board;
+};
+
+bool PCBNEW_PAIRING_RESOLVER::IsPairedNet(int aNet) const
+{
+    return PairingPolarity( aNet ) == 0;
+}
+
+int PCBNEW_PAIRING_RESOLVER::PairingPolarity(int aNet) const
+{
+    wxString refName = m_board->FindNet( aNet )->GetNetname();
+    wxString dummy1, dummy2;
+
+    return MatchDpSuffix( refName, dummy1, dummy2 );
+}
+
+int PCBNEW_PAIRING_RESOLVER::PairedNet(int aNet) const
+{
+    wxString refName = m_board->FindNet( aNet )->GetNetname();
+    wxString dummy, coupledNetName;
+
+    if( MatchDpSuffix( refName, coupledNetName, dummy ) )
+    {
+        NETINFO_ITEM* net = m_board->FindNet( coupledNetName );
+
+        if( !net )
+            return -1;
+
+        return net->GetNet();
+
+    }
+
+    return -1;
+}
+
+int PCBNEW_PAIRING_RESOLVER::MatchDpSuffix(wxString aNetName, wxString &aComplementNet, wxString &aBaseDpName) const
+{
+    int rv = 0;
+
+    if( aNetName.EndsWith( "+" ) )
+    {
+        aComplementNet = "-";
+        rv = 1;
+    }
+    else if( aNetName.EndsWith( "_P" ) )
+    {
+        aComplementNet = "_N";
+        rv = 1;
+    }
+    else if( aNetName.EndsWith( "-" ) )
+    {
+        aComplementNet = "+";
+        rv = -1;
+    }
+    else if( aNetName.EndsWith( "_N" ) )
+    {
+        aComplementNet = "_P";
+        rv = -1;
+    }
+
+    if( rv != 0 )
+    {
+        aBaseDpName = aNetName.Left( aNetName.Length() - aComplementNet.Length() );
+        aComplementNet = aBaseDpName + aComplementNet;
+    }
+
+    return rv;
+}
 
 PNS_ITEM* PNS_ROUTER::syncPad( D_PAD* aPad )
 {
@@ -460,10 +544,15 @@ void PNS_ROUTER::SyncWorld()
             m_world->Add( item );
     }
 
+    // TODO: Create resolvers in ctor, call resolver->SetBoard() in this->SetBoard() and delete it in dtor
+
     int worstClearance = m_board->GetDesignSettings().GetBiggestClearanceValue();
     m_clearanceResolver = new PNS_PCBNEW_CLEARANCE_RESOLVER( this );
     m_world->SetClearanceResolver( m_clearanceResolver );
     m_world->SetMaxClearance( 4 * worstClearance );
+
+    m_pairingResolver = new PCBNEW_PAIRING_RESOLVER( m_board );
+    m_world->SetPairingResolver( m_pairingResolver );
 }
 
 
@@ -471,6 +560,7 @@ PNS_ROUTER::PNS_ROUTER()
 {
 
     m_clearanceResolver = NULL;
+    m_pairingResolver = NULL;
 
     m_state = IDLE;
     m_world = NULL;
@@ -523,6 +613,9 @@ void PNS_ROUTER::ClearWorld()
 
     if( m_clearanceResolver )
         delete m_clearanceResolver;
+
+    if( m_pairingResolver )
+        delete m_pairingResolver;
 
     if( m_placer )
         delete m_placer;
@@ -677,48 +770,6 @@ bool PNS_ROUTER::StartRouting( const VECTOR2I& aP, PNS_ITEM* aStartItem, int aLa
 BOARD* PNS_ROUTER::GetBoard()
 {
     return m_board;
-}
-
-int PNS_ROUTER::DpCoupledNet(int aNet) const
-{
-    wxString refName = m_board->FindNet( aNet )->GetNetname();
-    wxString dummy, coupledNetName;
-
-    if( MatchDpSuffix( refName, coupledNetName, dummy ) )
-    {
-        NETINFO_ITEM* net = m_board->FindNet( coupledNetName );
-
-        if( !net )
-            return -1;
-
-        return net->GetNet();
-
-    }
-
-    return -1;
-}
-
-int PNS_ROUTER::DpNetPolarity(int aNet) const
-{
-    wxString refName = m_board->FindNet( aNet )->GetNetname();
-    wxString dummy1, dummy2;
-
-    return MatchDpSuffix( refName, dummy1, dummy2 );
-}
-
-bool PNS_ROUTER::IsPairedNet(int aNet) const
-{
-    return false; // FIXME
-}
-
-int PNS_ROUTER::PairingPolarity(int aNet) const
-{
-    return 0; // FIXME
-}
-
-int PNS_ROUTER::GetPairedNet(int aNet) const
-{
-    return 0; // FIXME
 }
 
 void PNS_ROUTER::DrawDebugPoint(VECTOR2I aP, int aColor)
@@ -935,41 +986,6 @@ void PNS_ROUTER::updateView( PNS_NODE* aNode, PNS_ITEMSET& aCurrent )
         }
     }
 }
-
-int PNS_ROUTER::MatchDpSuffix(wxString aNetName, wxString &aComplementNet, wxString &aBaseDpName) const
-{
-    int rv = 0;
-
-    if( aNetName.EndsWith( "+" ) )
-    {
-        aComplementNet = "-";
-        rv = 1;
-    }
-    else if( aNetName.EndsWith( "_P" ) )
-    {
-        aComplementNet = "_N";
-        rv = 1;
-    }
-    else if( aNetName.EndsWith( "-" ) )
-    {
-        aComplementNet = "+";
-        rv = -1;
-    }
-    else if( aNetName.EndsWith( "_N" ) )
-    {
-        aComplementNet = "_P";
-        rv = -1;
-    }
-
-    if( rv != 0 )
-    {
-        aBaseDpName = aNetName.Left( aNetName.Length() - aComplementNet.Length() );
-        aComplementNet = aBaseDpName + aComplementNet;
-    }
-
-    return rv;
-}
-
 
 void PNS_ROUTER::UpdateSizes ( const PNS_SIZES_SETTINGS& aSizes )
 {

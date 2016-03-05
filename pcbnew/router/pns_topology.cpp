@@ -262,7 +262,7 @@ bool commonParallelProjection( SEG n, SEG p, SEG &pClip, SEG& nClip );
 bool PNS_TOPOLOGY::AssembleDiffPair( PNS_ITEM* aStart, PNS_DIFF_PAIR& aPair )
 {
     int refNet = aStart->Net();
-    int coupledNet = m_router->DpCoupledNet( refNet );
+    int coupledNet = m_world->PairedNet( refNet );
 
     if( coupledNet < 0 )
         return false;
@@ -308,7 +308,7 @@ bool PNS_TOPOLOGY::AssembleDiffPair( PNS_ITEM* aStart, PNS_DIFF_PAIR& aPair )
     PNS_LINE lp = m_world->AssembleLine( refSeg );
     PNS_LINE ln = m_world->AssembleLine( coupledSeg );
 
-    if( m_router->DpNetPolarity( refNet ) < 0 )
+    if( m_world->PairingPolarity( refNet ) < 0 )
     {
         std::swap( lp, ln );
     }

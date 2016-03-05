@@ -437,11 +437,11 @@ OPT_VECTOR2I PNS_DIFF_PAIR_PLACER::getDanglingAnchor( PNS_NODE* aNode, PNS_ITEM*
 
 bool PNS_DIFF_PAIR_PLACER::findDpPrimitivePair( const VECTOR2I& aP, PNS_ITEM* aRefItem, PNS_DP_PRIMITIVE_PAIR& aPair )
 {
-    if (!Router()->IsPairedNet( aRefItem->Net() ))
+    if (m_world->IsPairedNet( aRefItem->Net() ))
         return false;
 
     int refNet = aRefItem->Net();
-    int pairedNet = Router()->GetPairedNet( refNet );
+    int pairedNet = m_world->PairedNet( refNet );
 
     std::set<PNS_ITEM*> items;
 
@@ -476,7 +476,7 @@ bool PNS_DIFF_PAIR_PLACER::findDpPrimitivePair( const VECTOR2I& aP, PNS_ITEM* aR
                 found = true;
                 bestDist = dist;
 
-                if( Router()->PairingPolarity( refNet ) > 0 )
+                if( m_world->PairingPolarity( refNet ) > 0 )
                 {
                     aPair = PNS_DP_PRIMITIVE_PAIR( aRefItem, item );
                     aPair.SetAnchors( *refAnchor, *anchor );

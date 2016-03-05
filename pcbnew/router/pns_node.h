@@ -62,6 +62,22 @@ public:
 };
 
 /**
+ * Class PNS_PAIRING_RESOLVER
+ *
+ * An abstract class to query net pairing.
+ **/
+class PNS_PAIRING_RESOLVER
+{
+public:
+    PNS_PAIRING_RESOLVER() {}
+    virtual ~PNS_PAIRING_RESOLVER() {}
+
+    virtual bool IsPairedNet( int aNet ) const = 0;
+    virtual int PairingPolarity( int aNet ) const = 0;
+    virtual int PairedNet( int aNet ) const = 0;
+};
+
+/**
  * Struct PNS_OBSTACLE
  *
  * Holds an object colliding with another object, along with
@@ -142,6 +158,21 @@ public:
     void SetClearanceResolver( PNS_CLEARANCE_RESOLVER* aSolver )
     {
         m_clearanceResolver = aSolver;
+    }
+
+    //> Returns true if aNet is part of a paired net
+    bool IsPairedNet( int aNet ) const;
+
+    //> Returns >0 if aNet is the positive net of a pair, <0 if it is the negative part, 0 if not paired
+    int PairingPolarity( int aNet ) const;
+
+    //> Returns the net paired with aNet
+    int PairedNet( int aNet ) const;
+
+    ///> Assigns a pairing resolver
+    void SetPairingResolver( PNS_PAIRING_RESOLVER *aResolver )
+    {
+        m_pairingResolver = aResolver;
     }
 
     ///> Returns the number of joints
@@ -453,6 +484,9 @@ private:
 
     ///> Clearance resolver
     PNS_CLEARANCE_RESOLVER* m_clearanceResolver;
+
+    //> Net pairing resolver
+    PNS_PAIRING_RESOLVER* m_pairingResolver;
 
     ///> Geometric/Net index of the items
     PNS_INDEX* m_index;

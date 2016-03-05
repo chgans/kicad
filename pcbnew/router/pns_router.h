@@ -53,6 +53,7 @@ class PNS_JOINT;
 class PNS_VIA;
 class PNS_CLEARANCE_RESOLVER;
 class PNS_PCBNEW_CLEARANCE_RESOLVER;
+class PCBNEW_PAIRING_RESOLVER;
 class PNS_SHOVE;
 class PNS_DRAGGER;
 
@@ -90,15 +91,6 @@ public:
     // Snapping (Only used by line and pair placers in their Start() )
     virtual bool SnappingEnabled() const = 0;
     virtual const VECTOR2I SnapToItem( PNS_ITEM* aItem, VECTOR2I aP, bool& aSplitsSegment ) = 0;
-
-    // Differential pair (given a net, find its paired net)
-    // For this one, it is obviously implementation dependent. This is about queryin the
-    // netlist for specail cases. Diff pair are such special cases.
-    virtual int DpCoupledNet( int aNet ) const = 0;
-    virtual int DpNetPolarity( int aNet ) const = 0;
-    virtual bool IsPairedNet( int aNet ) const = 0;
-    virtual int PairingPolarity( int aNet ) const = 0;
-    virtual int GetPairedNet( int aNet ) const = 0;
 
     // Debugging
     virtual void DisplayDebugLine( const SHAPE_LINE_CHAIN& aLine, int aType = 0, int aWidth = 0 ) = 0;
@@ -229,13 +221,6 @@ public:
     virtual bool SnappingEnabled() const;
     virtual const VECTOR2I SnapToItem( PNS_ITEM* aItem, VECTOR2I aP, bool& aSplitsSegment );
 
-    // Differential pair
-    virtual int DpCoupledNet( int aNet ) const;
-    virtual int DpNetPolarity( int aNet ) const;
-    virtual bool IsPairedNet( int aNet ) const;
-    virtual int PairingPolarity( int aNet ) const;
-    virtual int GetPairedNet( int aNet ) const;
-
     // Settings
     virtual PNS_ROUTING_SETTINGS& Settings();
     virtual PNS_SIZES_SETTINGS& Sizes();
@@ -290,6 +275,7 @@ private:
 
     PNS_ROUTING_SETTINGS m_settings;
     PNS_PCBNEW_CLEARANCE_RESOLVER* m_clearanceResolver;
+    PCBNEW_PAIRING_RESOLVER* m_pairingResolver;
 
     boost::unordered_set<BOARD_CONNECTED_ITEM*> m_hiddenItems;
 

@@ -55,6 +55,7 @@ PNS_NODE::PNS_NODE()
     m_parent = NULL;
     m_maxClearance = 800000;    // fixme: depends on how thick traces are.
     m_clearanceResolver = NULL;
+    m_pairingResolver = NULL;
     m_index = new PNS_INDEX;
     m_collisionFilter = NULL;
 
@@ -120,6 +121,30 @@ void PNS_NODE::TemporallyOverrideClearance(bool aEnable, int aNetA, int aNetB, i
         return;
 
     m_clearanceResolver->Override(aEnable, aNetA, aNetB, aClearance);
+}
+
+bool PNS_NODE::IsPairedNet(int aNet) const
+{
+    if (!m_pairingResolver)
+        return 0;
+
+    return m_pairingResolver->IsPairedNet( aNet );
+}
+
+int PNS_NODE::PairingPolarity(int aNet) const
+{
+    if (!m_pairingResolver)
+        return 0;
+
+    return m_pairingResolver->PairingPolarity(aNet );
+}
+
+int PNS_NODE::PairedNet(int aNet) const
+{
+    if (!m_pairingResolver)
+        return -1;
+
+    return m_pairingResolver->PairedNet( aNet );
 }
 
 
