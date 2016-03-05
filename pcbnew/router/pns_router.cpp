@@ -62,14 +62,15 @@
 #include <ratsnest_data.h>
 #include <layers_id_colors_and_visibility.h>
 
-class PNS_PCBNEW_CLEARANCE_FUNC : public PNS_CLEARANCE_FUNC
+class PNS_PCBNEW_CLEARANCE_RESOLVER : public PNS_CLEARANCE_RESOLVER
 {
 public:
-    PNS_PCBNEW_CLEARANCE_FUNC( PNS_ROUTER *aRouter );
-    virtual ~PNS_PCBNEW_CLEARANCE_FUNC();
+    PNS_PCBNEW_CLEARANCE_RESOLVER( PNS_ROUTER *aRouter );
+    ~PNS_PCBNEW_CLEARANCE_RESOLVER();
 
-    virtual int operator()( const PNS_ITEM* aA, const PNS_ITEM* aB );
-    virtual void OverrideClearance (bool aEnable, int aNetA = 0, int aNetB = 0, int aClearance = 0);
+    int query( const PNS_ITEM *aFirstItem, const PNS_ITEM *aSecondItem ) const;
+    int query( int aNet ) const;
+    void Override( bool aEnable, int aNetA = 0, int aNetB = 0, int aClearance = 0 );
 
     void UseDpGap( bool aUseDpGap ) { m_useDpGap = aUseDpGap; }
 
@@ -79,6 +80,7 @@ private:
         int clearance;
     };
 
+    // We only need BOARD *m_board;
     PNS_ROUTER *m_router;
 
     int localPadClearance( const PNS_ITEM* aItem ) const;
@@ -90,13 +92,10 @@ private:
     bool m_useDpGap;
 };
 
-PNS_PCBNEW_CLEARANCE_FUNC::PNS_PCBNEW_CLEARANCE_FUNC( PNS_ROUTER* aRouter ) :
+PNS_PCBNEW_CLEARANCE_RESOLVER::PNS_PCBNEW_CLEARANCE_RESOLVER( PNS_ROUTER* aRouter ) :
     m_router( aRouter )
 {
     BOARD* brd = m_router->GetBoard();
-    PNS_NODE* world = m_router->GetWorld();
-
-    PNS_TOPOLOGY topo( m_router, world );
     m_clearanceCache.resize( brd->GetNetCount() );
     m_useDpGap = false;
 
@@ -128,12 +127,12 @@ PNS_PCBNEW_CLEARANCE_FUNC::PNS_PCBNEW_CLEARANCE_FUNC( PNS_ROUTER* aRouter ) :
 }
 
 
-PNS_PCBNEW_CLEARANCE_FUNC::~PNS_PCBNEW_CLEARANCE_FUNC()
+PNS_PCBNEW_CLEARANCE_RESOLVER::~PNS_PCBNEW_CLEARANCE_RESOLVER()
 {
 }
 
 
-int PNS_PCBNEW_CLEARANCE_FUNC::localPadClearance( const PNS_ITEM* aItem ) const
+int PNS_PCBNEW_CLEARANCE_RESOLVER::localPadClearance( const PNS_ITEM* aItem ) const
 {
     if( !aItem->Parent() || aItem->Parent()->Type() != PCB_PAD_T )
         return 0;
@@ -143,12 +142,12 @@ int PNS_PCBNEW_CLEARANCE_FUNC::localPadClearance( const PNS_ITEM* aItem ) const
 }
 
 
-int PNS_PCBNEW_CLEARANCE_FUNC::operator()( const PNS_ITEM* aA, const PNS_ITEM* aB )
+int PNS_PCBNEW_CLEARANCE_RESOLVER::query( const PNS_ITEM* aA, const PNS_ITEM* aB ) const
 {
     int net_a = aA->Net();
-    int cl_a = ( net_a >= 0 ? m_clearanceCache[net_a].clearance : m_defaultClearance );
+    int cl_a = query( net_a );
     int net_b = aB->Net();
-    int cl_b = ( net_b >= 0 ? m_clearanceCache[net_b].clearance : m_defaultClearance );
+    int cl_b = query( net_b );
 
     bool linesOnly = aA->OfKind( PNS_ITEM::SEGMENT | PNS_ITEM::LINE ) && aB->OfKind( PNS_ITEM::SEGMENT | PNS_ITEM::LINE );
 
@@ -169,9 +168,16 @@ int PNS_PCBNEW_CLEARANCE_FUNC::operator()( const PNS_ITEM* aA, const PNS_ITEM* a
     return std::max( cl_a, cl_b );
 }
 
+int PNS_PCBNEW_CLEARANCE_RESOLVER::query( int aNet ) const
+{
+    if ( aNet >= 0 )
+        return m_defaultClearance;
+    else
+        return m_clearanceCache[aNet].clearance;
+}
 
 // fixme: ugly hack to make the optimizer respect gap width for currently routed differential pair.
-void PNS_PCBNEW_CLEARANCE_FUNC::OverrideClearance( bool aEnable, int aNetA, int aNetB , int aClearance )
+void PNS_PCBNEW_CLEARANCE_RESOLVER::Override( bool aEnable, int aNetA, int aNetB , int aClearance )
 {
     m_overrideEnabled = aEnable;
     m_overrideNetA = aNetA;
@@ -455,8 +461,8 @@ void PNS_ROUTER::SyncWorld()
     }
 
     int worstClearance = m_board->GetDesignSettings().GetBiggestClearanceValue();
-    m_clearanceFunc = new PNS_PCBNEW_CLEARANCE_FUNC( this );
-    m_world->SetClearanceFunctor( m_clearanceFunc );
+    m_clearanceResolver = new PNS_PCBNEW_CLEARANCE_RESOLVER( this );
+    m_world->SetClearanceResolver( m_clearanceResolver );
     m_world->SetMaxClearance( 4 * worstClearance );
 }
 
@@ -464,7 +470,7 @@ void PNS_ROUTER::SyncWorld()
 PNS_ROUTER::PNS_ROUTER()
 {
 
-    m_clearanceFunc = NULL;
+    m_clearanceResolver = NULL;
 
     m_state = IDLE;
     m_world = NULL;
@@ -515,8 +521,8 @@ void PNS_ROUTER::ClearWorld()
         delete m_world;
     }
 
-    if( m_clearanceFunc )
-        delete m_clearanceFunc;
+    if( m_clearanceResolver )
+        delete m_clearanceResolver;
 
     if( m_placer )
         delete m_placer;
@@ -524,7 +530,7 @@ void PNS_ROUTER::ClearWorld()
     if( m_previewItems )
         delete m_previewItems;
 
-    m_clearanceFunc = NULL;
+    m_clearanceResolver = NULL;
     m_world = NULL;
     m_placer = NULL;
     m_previewItems = NULL;
@@ -626,7 +632,7 @@ PNS_ROUTING_SETTINGS &PNS_ROUTER::Settings()
 
 bool PNS_ROUTER::StartRouting( const VECTOR2I& aP, PNS_ITEM* aStartItem, int aLayer )
 {
-    m_clearanceFunc->UseDpGap( false );
+    m_clearanceResolver->UseDpGap( false );
 
     switch( m_mode )
     {
@@ -635,7 +641,7 @@ bool PNS_ROUTER::StartRouting( const VECTOR2I& aP, PNS_ITEM* aStartItem, int aLa
         break;
     case PNS_MODE_ROUTE_DIFF_PAIR:
         m_placer = new PNS_DIFF_PAIR_PLACER( this );
-        m_clearanceFunc->UseDpGap( true );
+        m_clearanceResolver->UseDpGap( true );
         break;
     case PNS_MODE_TUNE_SINGLE:
         m_placer = new PNS_MEANDER_PLACER( this );
@@ -770,12 +776,6 @@ void PNS_ROUTER::DrawDebugDirs(VECTOR2D aP, int aMask, int aColor)
             DrawDebugSeg( SEG( aP, aP + v ), aColor );
         }
     }
-}
-
-bool PNS_ROUTER::ValidateClearanceForNet(int aClearance, int aNet) const
-{
-    NETCLASSPTR netclass = m_board->FindNet( aNet )->GetNetClass();
-    return aClearance < netclass->GetClearance();
 }
 
 void PNS_ROUTER::eraseView()
@@ -1245,11 +1245,6 @@ void PNS_ROUTER::DumpLog()
 
     if( logger )
         logger->Save( "/tmp/shove.log" );
-}
-
-PNS_CLEARANCE_FUNC *PNS_ROUTER::GetClearanceFunc() const
-{
-    return m_clearanceFunc;
 }
 
 

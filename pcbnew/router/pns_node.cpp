@@ -54,7 +54,7 @@ PNS_NODE::PNS_NODE()
     m_root = this;
     m_parent = NULL;
     m_maxClearance = 800000;    // fixme: depends on how thick traces are.
-    m_clearanceFunctor = NULL;
+    m_clearanceResolver = NULL;
     m_index = new PNS_INDEX;
     m_collisionFilter = NULL;
 
@@ -100,10 +100,26 @@ PNS_NODE::~PNS_NODE()
 
 int PNS_NODE::GetClearance( const PNS_ITEM* aA, const PNS_ITEM* aB ) const
 {
-   if( !m_clearanceFunctor )
+   if( !m_clearanceResolver )
         return 100000;
 
-   return (*m_clearanceFunctor)( aA, aB );
+   return m_clearanceResolver->query( aA, aB );
+}
+
+int PNS_NODE::GetClearance(int aNet) const
+{
+    if( !m_clearanceResolver )
+         return 100000;
+
+    return m_clearanceResolver->query( aNet );
+}
+
+void PNS_NODE::TemporallyOverrideClearance(bool aEnable, int aNetA, int aNetB, int aClearance)
+{
+    if (!m_clearanceResolver)
+        return;
+
+    m_clearanceResolver->Override(aEnable, aNetA, aNetB, aClearance);
 }
 
 
@@ -117,7 +133,7 @@ PNS_NODE* PNS_NODE::Branch()
 
     child->m_depth = m_depth + 1;
     child->m_parent = this;
-    child->m_clearanceFunctor = m_clearanceFunctor;
+    child->m_clearanceResolver = m_clearanceResolver;
     child->m_root = isRoot() ? this : m_root;
     child->m_collisionFilter = m_collisionFilter;
 

@@ -46,16 +46,19 @@ class PNS_ROUTER_IFACE;
 class BOARD_CONNECTED_ITEM;
 
 /**
- * Class PNS_CLEARANCE_FUNC
+ * Class PNS_CLEARANCE_RESOLVER
  *
- * An abstract function object, returning a required clearance between two items.
+ * An abstract class to query clearance constraints on items and nets.
  **/
-class PNS_CLEARANCE_FUNC
+class PNS_CLEARANCE_RESOLVER
 {
 public:
-    virtual ~PNS_CLEARANCE_FUNC() {}
-    virtual int operator()( const PNS_ITEM* aA, const PNS_ITEM* aB ) = 0;
-    virtual void OverrideClearance (bool aEnable, int aNetA = 0, int aNetB = 0, int aClearance = 0) = 0;
+    PNS_CLEARANCE_RESOLVER() {}
+    virtual ~PNS_CLEARANCE_RESOLVER() {}
+
+    virtual int query( const PNS_ITEM* aFirstItem, const PNS_ITEM* aSecondItem ) const = 0;
+    virtual int query( int aNet ) const = 0;
+    virtual void Override(bool aEnable, int aNetA = 0, int aNetB = 0, int aClearance = 0) = 0; // ?!?
 };
 
 /**
@@ -117,6 +120,9 @@ public:
     ///> Returns the expected clearance between items a and b.
     int GetClearance( const PNS_ITEM* aA, const PNS_ITEM* aB ) const;
 
+    ///> Returns the expected clearance for the net.
+    int GetClearance( int aNet ) const;
+
     ///> Returns the pre-set worst case clearance between any pair of items
     int GetMaxClearance() const
     {
@@ -129,10 +135,13 @@ public:
         m_maxClearance = aClearance;
     }
 
-    ///> Assigns a clerance resolution function object
-    void SetClearanceFunctor( PNS_CLEARANCE_FUNC* aFunc )
+    // FIXME: Hack for Diff pair placer
+    void TemporallyOverrideClearance( bool aEnable, int aNetA = 0, int aNetB = 0, int aClearance = 0 );
+
+    ///> Assigns a clearance resolver
+    void SetClearanceResolver( PNS_CLEARANCE_RESOLVER* aSolver )
     {
-        m_clearanceFunctor = aFunc;
+        m_clearanceResolver = aSolver;
     }
 
     ///> Returns the number of joints
@@ -442,8 +451,8 @@ private:
     ///> worst case item-item clearance
     int m_maxClearance;
 
-    ///> Clearance resolution functor
-    PNS_CLEARANCE_FUNC* m_clearanceFunctor;
+    ///> Clearance resolver
+    PNS_CLEARANCE_RESOLVER* m_clearanceResolver;
 
     ///> Geometric/Net index of the items
     PNS_INDEX* m_index;

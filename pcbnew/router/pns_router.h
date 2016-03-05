@@ -51,8 +51,8 @@ class PNS_SOLID;
 class PNS_SEGMENT;
 class PNS_JOINT;
 class PNS_VIA;
-class PNS_CLEARANCE_FUNC;
-class PNS_PCBNEW_CLEARANCE_FUNC;
+class PNS_CLEARANCE_RESOLVER;
+class PNS_PCBNEW_CLEARANCE_RESOLVER;
 class PNS_SHOVE;
 class PNS_DRAGGER;
 
@@ -90,14 +90,6 @@ public:
     // Snapping (Only used by line and pair placers in their Start() )
     virtual bool SnappingEnabled() const = 0;
     virtual const VECTOR2I SnapToItem( PNS_ITEM* aItem, VECTOR2I aP, bool& aSplitsSegment ) = 0;
-
-    // Clearance
-    // Only used by pair placer to override temporally the clearance (!?!)
-    // The clearance functor is transferred the the world node.
-    virtual PNS_CLEARANCE_FUNC* GetClearanceFunc() const = 0;
-    // Needed only by pair placer, should be part of the clearance functor
-    // Clearance functor to be made a querying/validating class, eg: PNS_DESIGN_RULES_VALIDATOR/CHECKER or PNS_DRC_ENGINE
-    virtual bool ValidateClearanceForNet( int aClearance, int aNet ) const = 0;
 
     // Differential pair (given a net, find its paired net)
     // For this one, it is obviously implementation dependent. This is about queryin the
@@ -237,10 +229,6 @@ public:
     virtual bool SnappingEnabled() const;
     virtual const VECTOR2I SnapToItem( PNS_ITEM* aItem, VECTOR2I aP, bool& aSplitsSegment );
 
-    // Clearance
-    virtual PNS_CLEARANCE_FUNC* GetClearanceFunc() const;
-    virtual bool ValidateClearanceForNet( int aClearance, int aNet ) const;
-
     // Differential pair
     virtual int DpCoupledNet( int aNet ) const;
     virtual int DpNetPolarity( int aNet ) const;
@@ -301,7 +289,7 @@ private:
     bool m_snappingEnabled;
 
     PNS_ROUTING_SETTINGS m_settings;
-    PNS_PCBNEW_CLEARANCE_FUNC* m_clearanceFunc;
+    PNS_PCBNEW_CLEARANCE_RESOLVER* m_clearanceResolver;
 
     boost::unordered_set<BOARD_CONNECTED_ITEM*> m_hiddenItems;
 

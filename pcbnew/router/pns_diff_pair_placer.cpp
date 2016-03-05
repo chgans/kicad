@@ -163,7 +163,7 @@ bool PNS_DIFF_PAIR_PLACER::attemptWalk ( PNS_NODE* aNode, PNS_DIFF_PAIR* aCurren
     PNS_WALKAROUND walkaround( aNode, Router() );
     PNS_WALKAROUND::WALKAROUND_STATUS wf1;
 
-    Router()->GetClearanceFunc()->OverrideClearance( true, aCurrent->NetP(), aCurrent->NetN(), aCurrent->Gap() );
+    aNode->TemporallyOverrideClearance( true, aCurrent->NetP(), aCurrent->NetN(), aCurrent->Gap() );
 
     walkaround.SetSolidsOnly( aSolidsOnly );
     walkaround.SetIterationLimit( RoutingSettings().WalkaroundIterationLimit() );
@@ -231,7 +231,8 @@ bool PNS_DIFF_PAIR_PLACER::attemptWalk ( PNS_NODE* aNode, PNS_DIFF_PAIR* aCurren
         return false;
 
     aWalk.SetShape( cur.CP(), cur.CN() );
-    Router()->GetClearanceFunc()->OverrideClearance( false );
+
+    aNode->TemporallyOverrideClearance( false );
 
     return true;
 }
@@ -537,8 +538,8 @@ bool PNS_DIFF_PAIR_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
     m_netN = m_start.PrimN()->Net();
 
     int clearance = std::min( SizeSettings().DiffPairGap(), SizeSettings().DiffPairViaGap() );
-    if (!Router()->ValidateClearanceForNet( clearance, m_netP ) ||
-            !Router()->ValidateClearanceForNet( clearance, m_netN ))
+    if ( clearance > m_currentNode->GetClearance( m_netP ) ||
+         clearance > m_currentNode->GetClearance( m_netN ) )
     {
         SetFailureReason( _( "Current track/via gap setting violates "
                              "design rules for this net." ) );
