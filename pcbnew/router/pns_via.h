@@ -66,8 +66,7 @@ public:
         //  - => need for a VIA Factory?
         if( aViaType == PNS_THROUGH_VIA )
         {
-            PNS_LAYERSET allLayers( 0, 31 );
-            SetLayers( allLayers );
+            SetLayers( PNS_LAYERSET::All() );
         }
     }
 

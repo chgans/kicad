@@ -86,7 +86,7 @@ void PNS_SIZES_SETTINGS::AddLayerPair( int aL1, int aL2 )
 int PNS_SIZES_SETTINGS::GetLayerTop() const
 {
     if( m_layerPairs.empty() )
-        return 0; // FIXME: KiCad F_Cu = 0
+        return PNS_LAYERSET::FRONT_LAYER;
     else
         return m_layerPairs.begin()->first;
 }
@@ -95,7 +95,7 @@ int PNS_SIZES_SETTINGS::GetLayerTop() const
 int PNS_SIZES_SETTINGS::GetLayerBottom() const
 {
     if( m_layerPairs.empty() )
-        return 31; // FIXME: B_Cu = 31
+        return PNS_LAYERSET::BACK_LAYER;
     else
         return m_layerPairs.begin()->second;
 }

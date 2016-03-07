@@ -31,6 +31,9 @@
 class PNS_LAYERSET
 {
 public:
+    static const int FRONT_LAYER = 0;
+    static const int BACK_LAYER = 31;
+
     PNS_LAYERSET() :
         m_start( -1 ),
         m_end( -1 )
@@ -108,7 +111,7 @@ public:
     ///> Shortcut for comparisons/overlap tests
     static PNS_LAYERSET All()
     {
-        return PNS_LAYERSET( 0, 256 ); // fixme: use layer IDs header
+        return PNS_LAYERSET( FRONT_LAYER, BACK_LAYER );
     }
 
     bool operator==( const PNS_LAYERSET& aOther ) const

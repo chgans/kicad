@@ -21,7 +21,6 @@
 #ifndef __PNS_INDEX_H
 #define __PNS_INDEX_H
 
-#include <layers_id_colors_and_visibility.h>
 #include <map>
 
 #include <boost/foreach.hpp>
@@ -176,9 +175,9 @@ PNS_INDEX::ITEM_SHAPE_INDEX* PNS_INDEX::getSubindex( const PNS_ITEM* aItem )
         {
             if( l.IsMultilayer() )
                 idx_n = SI_Multilayer;
-            else if( l.Start() == B_Cu ) // fixme: use kicad layer codes
+            else if( l.Start() == PNS_LAYERSET::BACK_LAYER )
                 idx_n = SI_PadsTop;
-            else if( l.Start() == F_Cu )
+            else if( l.Start() == PNS_LAYERSET::FRONT_LAYER )
                 idx_n = SI_PadsBottom;
         }
         break;
@@ -264,9 +263,9 @@ int PNS_INDEX::Query( const PNS_ITEM* aItem, int aMinDistance, Visitor& aVisitor
     {
         int l = layers.Start();
 
-        if( l == B_Cu )
+        if( l == PNS_LAYERSET::BACK_LAYER )
             total += querySingle( SI_PadsTop, shape, aMinDistance, aVisitor );
-        else if( l == F_Cu )
+        else if( l == PNS_LAYERSET::FRONT_LAYER )
             total += querySingle( SI_PadsBottom, shape, aMinDistance, aVisitor );
 
         total += querySingle(  SI_Traces + 2 * l + SI_SegStraight, shape, aMinDistance, aVisitor );
