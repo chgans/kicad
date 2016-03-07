@@ -25,7 +25,6 @@
 
 #include "pns_line.h"
 #include "pns_node.h"
-#include "pns_router.h"
 #include "pns_logger.h"
 #include "pns_algo_base.h"
 
@@ -34,8 +33,8 @@ class PNS_WALKAROUND : public PNS_ALGO_BASE
     static const int DefaultIterationLimit = 50;
 
 public:
-    PNS_WALKAROUND( PNS_NODE* aWorld, PNS_ROUTER_IFACE* aRouter ) :
-        PNS_ALGO_BASE ( aRouter ),
+    PNS_WALKAROUND( PNS_NODE* aWorld ) :
+        PNS_ALGO_BASE (),
         m_world( aWorld ),
         m_iterationLimit( DefaultIterationLimit )
     {

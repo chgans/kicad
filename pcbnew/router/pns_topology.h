@@ -32,15 +32,14 @@ class PNS_JOINT;
 class PNS_ITEM;
 class PNS_SOLID;
 class PNS_DIFF_PAIR;
-class PNS_ROUTER_IFACE;
 
 class PNS_TOPOLOGY
 {
 public:
     typedef std::set<PNS_JOINT*> JOINT_SET;
 
-    PNS_TOPOLOGY( PNS_ROUTER_IFACE *aRouter, PNS_NODE* aNode ):
-        m_router(aRouter), m_world( aNode ) {}
+    PNS_TOPOLOGY( PNS_NODE* aNode ):
+        m_world( aNode ) {}
 
     ~PNS_TOPOLOGY() {}
 
@@ -64,7 +63,6 @@ public:
 private:
     bool followTrivialPath( PNS_LINE* aLine, bool aLeft, PNS_ITEMSET& aSet, std::set<PNS_ITEM*>& aVisited );
 
-    PNS_ROUTER_IFACE *m_router;
     PNS_NODE *m_world;
 };
 

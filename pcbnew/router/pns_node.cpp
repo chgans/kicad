@@ -38,7 +38,6 @@
 #include "pns_solid.h"
 #include "pns_joint.h"
 #include "pns_index.h"
-#include "pns_router.h"
 
 using boost::unordered_set;
 using boost::unordered_map;

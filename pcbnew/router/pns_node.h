@@ -42,7 +42,6 @@ class PNS_SOLID;
 class PNS_VIA;
 class PNS_RATSNEST;
 class PNS_INDEX;
-class PNS_ROUTER_IFACE;
 class BOARD_CONNECTED_ITEM;
 
 /**

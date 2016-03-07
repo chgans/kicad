@@ -30,7 +30,6 @@
 #include "pns_meander_placer_base.h"
 #include "pns_diff_pair.h"
 
-class PNS_ROUTER_IFACE;
 class PNS_NODE;
 
 /**
@@ -42,7 +41,7 @@ class PNS_NODE;
 class PNS_DP_MEANDER_PLACER : public PNS_MEANDER_PLACER_BASE
 {
 public:
-    PNS_DP_MEANDER_PLACER( PNS_ROUTER_IFACE* aRouter );
+    PNS_DP_MEANDER_PLACER( );
     ~PNS_DP_MEANDER_PLACER();
 
     /**

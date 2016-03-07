@@ -32,10 +32,9 @@
 #include "direction.h"
 
 #include "pns_diff_pair.h"
-#include "pns_router.h"
 #include "pns_solid.h"
 #include "pns_utils.h"
-
+#include "pns_segment.h"
 
 class PNS_LINE;
 

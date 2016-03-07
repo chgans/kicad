@@ -36,7 +36,6 @@
 #include "pns_optimizer.h"
 #include "pns_via.h"
 #include "pns_utils.h"
-#include "pns_router.h"
 #include "pns_shove.h"
 #include "pns_utils.h"
 #include "pns_topology.h"
@@ -72,8 +71,8 @@ void PNS_SHOVE::sanityCheck( PNS_LINE* aOld, PNS_LINE* aNew )
 }
 
 
-PNS_SHOVE::PNS_SHOVE( PNS_NODE* aWorld, PNS_ROUTER_IFACE* aRouter ) :
-    PNS_ALGO_BASE ( aRouter )
+PNS_SHOVE::PNS_SHOVE( PNS_NODE* aWorld ) :
+    PNS_ALGO_BASE ()
 {
     m_forceClearance = -1;
     m_root = aWorld;
@@ -397,7 +396,7 @@ PNS_SHOVE::SHOVE_STATUS PNS_SHOVE::onCollidingLine( PNS_LINE& aCurrent, PNS_LINE
 
 PNS_SHOVE::SHOVE_STATUS PNS_SHOVE::onCollidingSolid( PNS_LINE& aCurrent, PNS_ITEM* aObstacle )
 {
-    PNS_WALKAROUND walkaround( m_currentNode, Router() );
+    PNS_WALKAROUND walkaround( m_currentNode );
     PNS_LINE walkaroundLine( aCurrent );
 
     if( aCurrent.EndsWithVia() )
@@ -422,7 +421,7 @@ PNS_SHOVE::SHOVE_STATUS PNS_SHOVE::onCollidingSolid( PNS_LINE& aCurrent, PNS_ITE
             return onCollidingVia( aObstacle, via );
     }
 
-    PNS_TOPOLOGY topo( Router(), m_currentNode );
+    PNS_TOPOLOGY topo( m_currentNode );
 
     std::set<PNS_ITEM*> cluster = topo.AssembleCluster( aObstacle, aCurrent.Layers().Start() );
 
@@ -601,7 +600,7 @@ PNS_SHOVE::SHOVE_STATUS PNS_SHOVE::pushVia( PNS_VIA* aVia, const VECTOR2I& aForc
 
     BOOST_FOREACH( PNS_ITEM* item, jt->LinkList() )
     {
-        if( PNS_SEGMENT* seg = dyn_cast<PNS_SEGMENT*>( item ) )
+        if( PNS_SEGMENT* seg = pns_item_cast<PNS_SEGMENT*>( item ) )
         {
             LINE_PAIR lp;
             int segIndex;

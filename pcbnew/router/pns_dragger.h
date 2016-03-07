@@ -27,7 +27,6 @@
 #include "pns_algo_base.h"
 #include "pns_itemset.h"
 
-class PNS_ROUTER_IFACE;
 class PNS_SHOVE;
 class PNS_OPTIMIZER;
 class PNS_VIA;
@@ -41,7 +40,7 @@ class PNS_NODE;
 class PNS_DRAGGER : public PNS_ALGO_BASE
 {
 public:
-     PNS_DRAGGER( PNS_ROUTER_IFACE* aRouter );
+     PNS_DRAGGER();
     ~PNS_DRAGGER();
 
      /**

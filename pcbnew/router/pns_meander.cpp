@@ -27,7 +27,6 @@
 #include "pns_topology.h"
 #include "pns_meander.h"
 #include "pns_meander_placer_base.h"
-#include "pns_router.h"
 
 const PNS_MEANDER_SETTINGS& PNS_MEANDER_SHAPE::Settings() const
 {

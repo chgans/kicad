@@ -31,7 +31,6 @@
 #include "pns_diff_pair.h"
 #include "pns_placement_algo.h"
 
-class PNS_ROUTER_IFACE;
 class PNS_VIA;
 
 
@@ -45,7 +44,7 @@ class PNS_VIA;
 class PNS_DIFF_PAIR_PLACER : public PNS_PLACEMENT_ALGO
 {
 public:
-    PNS_DIFF_PAIR_PLACER( PNS_ROUTER_IFACE* aRouter );
+    PNS_DIFF_PAIR_PLACER();
     ~PNS_DIFF_PAIR_PLACER();
 
     /**

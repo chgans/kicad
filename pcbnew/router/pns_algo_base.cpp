@@ -19,7 +19,6 @@
  */
 
 #include "pns_algo_base.h"
-#include "pns_router.h"
 
 PNS_LOGGER *PNS_ALGO_BASE::Logger()
 {

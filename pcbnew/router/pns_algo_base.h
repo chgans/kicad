@@ -25,29 +25,21 @@
 #include "pns_sizes_settings.h"
 #include "pns_meander.h" // for meander settings
 
-class PNS_ROUTER_IFACE;
 class PNS_LOGGER;
 
 /**
  * Class PNS_ALGO_BASE
  *
  * Base class for all P&S algorithms (shoving, walkaround, line placement, dragging, etc.)
- * Holds a bunch of objects commonly used by all algorithms (P&S settings, parent router instance, logging)
+ * Holds routing settings and notify on changes. (FIXME: should we move the debug decorator down to here?)
  */
 class PNS_ALGO_BASE
 {
 public:
-    PNS_ALGO_BASE( PNS_ROUTER_IFACE* aRouter ) :
-        m_router( aRouter )
+    PNS_ALGO_BASE( )
     {}
 
     virtual ~PNS_ALGO_BASE() {}
-
-    ///> Returns the instance of our router
-    PNS_ROUTER_IFACE* Router() const
-    {
-        return m_router;
-    }
 
     ///> Returns the logger object, allowing to dump geometry to a file.
     virtual PNS_LOGGER* Logger();
@@ -103,7 +95,6 @@ protected:
     {}
 
 private:
-    PNS_ROUTER_IFACE* m_router;
     PNS_ROUTING_SETTINGS m_routingSettings;
     PNS_SIZES_SETTINGS m_sizeSettings;
     PNS_MEANDER_SETTINGS m_meanderSettings;

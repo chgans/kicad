@@ -28,13 +28,12 @@
 #include "pns_topology.h"
 #include "pns_dp_meander_placer.h"
 #include "pns_diff_pair.h"
-#include "pns_router.h"
 #include "pns_utils.h"
 
 using boost::optional;
 
-PNS_DP_MEANDER_PLACER::PNS_DP_MEANDER_PLACER( PNS_ROUTER_IFACE* aRouter ) :
-    PNS_MEANDER_PLACER_BASE( aRouter )
+PNS_DP_MEANDER_PLACER::PNS_DP_MEANDER_PLACER() :
+    PNS_MEANDER_PLACER_BASE()
 {
     m_world = NULL;
     m_currentNode = NULL;
@@ -86,7 +85,7 @@ bool PNS_DP_MEANDER_PLACER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
 
     m_world = GetInitialWorld()->Branch();
 
-    PNS_TOPOLOGY topo( Router(), m_world );
+    PNS_TOPOLOGY topo( m_world );
 
     if( !topo.AssembleDiffPair( m_initialSegment, m_originPair ) )
     {
@@ -128,14 +127,14 @@ int PNS_DP_MEANDER_PLACER::origPathLength() const
 
     BOOST_FOREACH( const PNS_ITEM* item, m_tunedPathP.CItems() )
     {
-        if( const PNS_LINE* l = dyn_cast<const PNS_LINE*>( item ) )
+        if( const PNS_LINE* l = pns_item_cast<const PNS_LINE*>( item ) )
             totalP += l->CLine().Length();
 
     }
 
     BOOST_FOREACH( const PNS_ITEM* item, m_tunedPathN.CItems() )
     {
-        if( const PNS_LINE* l = dyn_cast<const PNS_LINE*>( item ) )
+        if( const PNS_LINE* l = pns_item_cast<const PNS_LINE*>( item ) )
             totalN += l->CLine().Length();
     }
 
@@ -206,13 +205,13 @@ bool PNS_DP_MEANDER_PLACER::Move( const VECTOR2I& aP, PNS_ITEM* aEndItem )
 
     BOOST_FOREACH( const PNS_ITEM* item, m_tunedPathP.CItems() )
     {
-        if( const PNS_LINE* l = dyn_cast<const PNS_LINE*>( item ) )
+        if( const PNS_LINE* l = pns_item_cast<const PNS_LINE*>( item ) )
             DrawDebugLine( l->CLine(), 5, 10000 );
     }
 
     BOOST_FOREACH( const PNS_ITEM* item, m_tunedPathN.CItems() )
     {
-        if( const PNS_LINE* l = dyn_cast<const PNS_LINE*>( item ) )
+        if( const PNS_LINE* l = pns_item_cast<const PNS_LINE*>( item ) )
             DrawDebugLine( l->CLine(), 5, 10000 );
     }
 

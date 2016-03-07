@@ -27,15 +27,14 @@
 #include "pns_walkaround.h"
 #include "pns_shove.h"
 #include "pns_utils.h"
-#include "pns_router.h"
 #include "pns_diff_pair_placer.h"
 #include "pns_solid.h"
 #include "pns_topology.h"
 
 using boost::optional;
 
-PNS_DIFF_PAIR_PLACER::PNS_DIFF_PAIR_PLACER( PNS_ROUTER_IFACE* aRouter ) :
-    PNS_PLACEMENT_ALGO( aRouter )
+PNS_DIFF_PAIR_PLACER::PNS_DIFF_PAIR_PLACER() :
+    PNS_PLACEMENT_ALGO()
 {
     m_state = RT_START;
     m_chainedPlacement = false;
@@ -153,7 +152,7 @@ bool PNS_DIFF_PAIR_PLACER::propagateDpHeadForces ( const VECTOR2I& aP, VECTOR2I&
 
 bool PNS_DIFF_PAIR_PLACER::attemptWalk ( PNS_NODE* aNode, PNS_DIFF_PAIR* aCurrent, PNS_DIFF_PAIR& aWalk, bool aPFirst, bool aWindCw, bool aSolidsOnly )
 {
-    PNS_WALKAROUND walkaround( aNode, Router() );
+    PNS_WALKAROUND walkaround( aNode );
     PNS_WALKAROUND::WALKAROUND_STATUS wf1;
 
     aNode->TemporallyOverrideClearance( true, aCurrent->NetP(), aCurrent->NetN(), aCurrent->Gap() );
@@ -161,7 +160,7 @@ bool PNS_DIFF_PAIR_PLACER::attemptWalk ( PNS_NODE* aNode, PNS_DIFF_PAIR* aCurren
     walkaround.SetSolidsOnly( aSolidsOnly );
     walkaround.SetIterationLimit( RoutingSettings().WalkaroundIterationLimit() );
 
-    PNS_SHOVE shove( aNode, Router() );
+    PNS_SHOVE shove( aNode );
     PNS_LINE walkP, walkN;
 
     aWalk = *aCurrent;
@@ -572,7 +571,7 @@ void PNS_DIFF_PAIR_PLACER::initPlacement()
 
     if( m_currentMode == RM_Shove || m_currentMode == RM_Smart )
     {
-        m_shove = new PNS_SHOVE( m_currentNode, Router() );
+        m_shove = new PNS_SHOVE( m_currentNode );
     }
 }
 
@@ -676,7 +675,7 @@ bool PNS_DIFF_PAIR_PLACER::FixRoute( const VECTOR2I& aP, PNS_ITEM* aEndItem )
     if( m_currentTrace.CP().SegmentCount() > 1 )
         m_initialDiagonal = !DIRECTION_45( m_currentTrace.CP().CSegment( -2 ) ).IsDiagonal();
 
-    PNS_TOPOLOGY topo( Router(), m_lastNode );
+    PNS_TOPOLOGY topo( m_lastNode );
 
     if( !m_snapOnTarget && !m_currentTrace.EndsWithVias() )
     {
@@ -742,7 +741,7 @@ void PNS_DIFF_PAIR_PLACER::GetModifiedNets( std::vector<int> &aNets ) const
 void PNS_DIFF_PAIR_PLACER::updateLeadingRatLine()
 {
     SHAPE_LINE_CHAIN ratLineN, ratLineP;
-    PNS_TOPOLOGY topo( Router(), m_lastNode );
+    PNS_TOPOLOGY topo( m_lastNode );
 
     if( topo.LeadingRatLine( &m_currentTrace.PLine(), ratLineP ) )
     {

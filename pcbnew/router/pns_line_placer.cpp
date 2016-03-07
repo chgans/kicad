@@ -28,14 +28,13 @@
 #include "pns_walkaround.h"
 #include "pns_shove.h"
 #include "pns_utils.h"
-#include "pns_router.h"
 #include "pns_topology.h"
 
 
 using boost::optional;
 
-PNS_LINE_PLACER::PNS_LINE_PLACER( PNS_ROUTER_IFACE* aRouter ) :
-    PNS_PLACEMENT_ALGO( aRouter )
+PNS_LINE_PLACER::PNS_LINE_PLACER() :
+    PNS_PLACEMENT_ALGO()
 {
     m_initial_direction = DIRECTION_45::N;
     m_world = NULL;
@@ -363,7 +362,7 @@ bool PNS_LINE_PLACER::rhWalkOnly( const VECTOR2I& aP, PNS_LINE& aNewHead )
 
     viaOk = buildInitialLine( aP, initTrack );
 
-    PNS_WALKAROUND walkaround( m_currentNode, Router() );
+    PNS_WALKAROUND walkaround( m_currentNode );
 
     walkaround.SetSolidsOnly( false );
     walkaround.SetIterationLimit( RoutingSettings().WalkaroundIterationLimit() );
@@ -428,7 +427,7 @@ bool PNS_LINE_PLACER::rhShoveOnly( const VECTOR2I& aP, PNS_LINE& aNewHead )
     m_currentNode = m_shove->CurrentNode();
     PNS_OPTIMIZER optimizer( m_currentNode );
 
-    PNS_WALKAROUND walkaround( m_currentNode, Router() );
+    PNS_WALKAROUND walkaround( m_currentNode );
 
     walkaround.SetSolidsOnly( true );
     walkaround.SetIterationLimit( 10 );
@@ -797,7 +796,7 @@ void PNS_LINE_PLACER::initPlacement()
 
     if( m_currentMode == RM_Shove || m_currentMode == RM_Smart )
     {
-        m_shove = new PNS_SHOVE( m_world->Branch(), Router() );
+        m_shove = new PNS_SHOVE( m_world->Branch() );
     }
 }
 
@@ -1011,7 +1010,7 @@ void PNS_LINE_PLACER::updateLeadingRatLine()
 {
     PNS_LINE current = Trace();
     SHAPE_LINE_CHAIN ratLine;
-    PNS_TOPOLOGY topo( Router(), m_lastNode );
+    PNS_TOPOLOGY topo( m_lastNode );
 
     if( topo.LeadingRatLine( &current, ratLine ) )
         DrawDebugLine( ratLine, 5, 10000 );

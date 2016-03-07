@@ -23,7 +23,6 @@
 #include "pns_node.h"
 #include "pns_joint.h"
 #include "pns_solid.h"
-#include "pns_router.h"
 #include "pns_utils.h"
 
 #include "pns_diff_pair.h"
@@ -112,7 +111,7 @@ bool PNS_TOPOLOGY::LeadingRatLine( const PNS_LINE* aTrack, SHAPE_LINE_CHAIN& aRa
     {
         int anchor;
 
-        PNS_TOPOLOGY topo( m_router, tmpNode.get() );
+        PNS_TOPOLOGY topo( tmpNode.get() );
         PNS_ITEM* it = topo.NearestUnconnectedItem( jt, &anchor );
 
         if( !it )
@@ -274,11 +273,11 @@ bool PNS_TOPOLOGY::AssembleDiffPair( PNS_ITEM* aStart, PNS_DIFF_PAIR& aPair )
     PNS_SEGMENT* coupledSeg = NULL, *refSeg;
     int minDist = std::numeric_limits<int>::max();
 
-    if( ( refSeg = dyn_cast<PNS_SEGMENT*>( aStart ) ) != NULL )
+    if( ( refSeg = pns_item_cast<PNS_SEGMENT*>( aStart ) ) != NULL )
     {
         BOOST_FOREACH( PNS_ITEM* item, coupledItems )
         {
-            if( PNS_SEGMENT* s = dyn_cast<PNS_SEGMENT*>( item ) )
+            if( PNS_SEGMENT* s = pns_item_cast<PNS_SEGMENT*>( item ) )
             {
                 if( s->Layers().Start() == refSeg->Layers().Start() && s->Width() == refSeg->Width() )
                 {

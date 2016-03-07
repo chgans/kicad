@@ -821,7 +821,7 @@ bool PNS_ROUTER::StartDragging( const VECTOR2I& aP, PNS_ITEM* aStartItem )
     if( !aStartItem || aStartItem->OfKind( PNS_ITEM::SOLID ) )
         return false;
 
-    m_dragger = new PNS_DRAGGER( this );
+    m_dragger = new PNS_DRAGGER();
     m_dragger->SetInitialWorld( m_world );
 
     if( m_dragger->Start ( aP, aStartItem ) )
@@ -848,20 +848,20 @@ bool PNS_ROUTER::StartRouting( const VECTOR2I& aP, PNS_ITEM* aStartItem, int aLa
     switch( m_mode )
     {
     case PNS_MODE_ROUTE_SINGLE:
-        m_placer = new PNS_LINE_PLACER( this );
+        m_placer = new PNS_LINE_PLACER();
         break;
     case PNS_MODE_ROUTE_DIFF_PAIR:
-        m_placer = new PNS_DIFF_PAIR_PLACER( this );
+        m_placer = new PNS_DIFF_PAIR_PLACER();
         m_clearanceResolver->UseDpGap( true );
         break;
     case PNS_MODE_TUNE_SINGLE:
-        m_placer = new PNS_MEANDER_PLACER( this );
+        m_placer = new PNS_MEANDER_PLACER();
         break;
     case PNS_MODE_TUNE_DIFF_PAIR:
-        m_placer = new PNS_DP_MEANDER_PLACER( this );
+        m_placer = new PNS_DP_MEANDER_PLACER();
         break;
     case PNS_MODE_TUNE_DIFF_PAIR_SKEW:
-        m_placer = new PNS_MEANDER_SKEW_PLACER( this );
+        m_placer = new PNS_MEANDER_SKEW_PLACER();
         break;
 
     default:

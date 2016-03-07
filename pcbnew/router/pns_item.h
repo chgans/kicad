@@ -40,6 +40,34 @@ enum LineMarker {
     MK_DP_COUPLED   = ( 1 << 5 )
 };
 
+template<typename T>
+struct pns_item_remove_pointer
+{
+    typedef T type;
+};
+
+template<typename T>
+struct pns_item_remove_pointer<T*>
+{
+    typedef typename pns_item_remove_pointer<T>::type type;
+};
+
+/**
+ * Function pns_item_cast()
+ *
+ * A lightweight dynamic downcast. Casts aObject to type Casted*.
+ * Uses PNS_ITEM::Type() and PNS_ITEM::ClassOf() to check if type matches.
+ * @param aObject object to be casted
+ * @return down-casted object or NULL if type doesn't match Casted.
+ */
+template<class Casted, class From>
+Casted pns_item_cast( From aObject )
+{
+    if( pns_item_remove_pointer<Casted>::type::ClassOf ( aObject ) )
+        return static_cast<Casted>( aObject );
+
+    return NULL;
+}
 
 /**
  * Class PNS_ITEM

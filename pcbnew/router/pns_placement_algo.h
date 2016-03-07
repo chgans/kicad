@@ -27,6 +27,8 @@
 #include "pns_itemset.h"
 #include "pns_segment.h"
 
+#include <wx/translation.h> // FIXME: _(message) is needed by various placement algo implementations
+
 class PNS_DEBUG_DECORATOR
 {
 public:
@@ -43,7 +45,6 @@ public:
     virtual void Clear() = 0;
 };
 
-class PNS_ROUTER_IFACE;
 class PNS_ITEM;
 class PNS_NODE;
 
@@ -58,8 +59,8 @@ class PNS_NODE;
 class PNS_PLACEMENT_ALGO : public PNS_ALGO_BASE
 {
 public:
-    PNS_PLACEMENT_ALGO( PNS_ROUTER_IFACE* aRouter ) :
-        PNS_ALGO_BASE( aRouter ), m_initialWorld( NULL ), m_resultingWorld( NULL )
+    PNS_PLACEMENT_ALGO() :
+        PNS_ALGO_BASE(), m_initialWorld( NULL ), m_resultingWorld( NULL )
     {}
 
     virtual ~PNS_PLACEMENT_ALGO () {}

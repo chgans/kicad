@@ -18,12 +18,11 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "pns_router.h"
 #include "pns_meander.h"
 #include "pns_meander_placer_base.h"
 
-PNS_MEANDER_PLACER_BASE::PNS_MEANDER_PLACER_BASE( PNS_ROUTER_IFACE* aRouter ) :
-        PNS_PLACEMENT_ALGO( aRouter )
+PNS_MEANDER_PLACER_BASE::PNS_MEANDER_PLACER_BASE() :
+        PNS_PLACEMENT_ALGO()
 {
     m_currentWidth = 0;
 }

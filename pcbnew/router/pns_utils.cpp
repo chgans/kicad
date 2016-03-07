@@ -21,7 +21,6 @@
 #include "pns_utils.h"
 #include "pns_line.h"
 #include "pns_via.h"
-#include "pns_router.h"
 
 #include <geometry/shape_segment.h>
 

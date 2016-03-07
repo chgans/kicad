@@ -22,10 +22,11 @@
 
 #include "pns_dragger.h"
 #include "pns_shove.h"
-#include "pns_router.h"
+#include "pns_node.h"
+#include "pns_segment.h"
 
-PNS_DRAGGER::PNS_DRAGGER( PNS_ROUTER_IFACE* aRouter ) :
-    PNS_ALGO_BASE( aRouter )
+PNS_DRAGGER::PNS_DRAGGER() :
+    PNS_ALGO_BASE()
 {
     m_world = NULL;
     m_lastNode = NULL;
@@ -102,7 +103,7 @@ bool PNS_DRAGGER::startDragVia( const VECTOR2D& aP, PNS_VIA* aVia )
 bool PNS_DRAGGER::Start( const VECTOR2I& aP, PNS_ITEM* aStartItem )
 {
     ClearFailureReason();
-    m_shove = new PNS_SHOVE( m_world, Router() );
+    m_shove = new PNS_SHOVE( m_world );
     m_lastNode = NULL;
     m_draggedItems.Clear();
     m_currentMode = RoutingSettings().Mode();
@@ -190,7 +191,7 @@ void PNS_DRAGGER::dumbDragVia( PNS_VIA* aVia, PNS_NODE* aNode, const VECTOR2I& a
 
     BOOST_FOREACH( PNS_ITEM* item, m_origViaConnections.Items() )
     {
-        if( const PNS_LINE* l = dyn_cast<const PNS_LINE*>( item ) )
+        if( const PNS_LINE* l = pns_item_cast<const PNS_LINE*>( item ) )
         {
             PNS_LINE origLine( *l );
             PNS_LINE draggedLine( *l );

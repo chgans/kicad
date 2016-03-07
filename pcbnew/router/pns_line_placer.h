@@ -29,7 +29,6 @@
 #include "pns_line.h"
 #include "pns_placement_algo.h"
 
-class PNS_ROUTER_IFACE;
 class PNS_SHOVE;
 class PNS_OPTIMIZER;
 class PNS_VIA;
@@ -45,7 +44,7 @@ class PNS_NODE;
 class PNS_LINE_PLACER : public PNS_PLACEMENT_ALGO
 {
 public:
-    PNS_LINE_PLACER( PNS_ROUTER_IFACE* aRouter );
+    PNS_LINE_PLACER();
     ~PNS_LINE_PLACER();
 
     /**

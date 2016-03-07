@@ -30,7 +30,6 @@
 #include "pns_solid.h"
 #include "pns_optimizer.h"
 #include "pns_utils.h"
-#include "pns_router.h"
 
 /**
  *  Cost Estimator Methods
@@ -273,7 +272,7 @@ int LINE_RESTRICTIONS::allowedAngles( PNS_NODE* aWorld, const PNS_LINE* aLine, c
     {
         if( item->OfKind( PNS_ITEM::VIA ) || item->OfKind( PNS_ITEM::SOLID ) )
             return 0xff;
-        else if( const PNS_SEGMENT* seg = dyn_cast<const PNS_SEGMENT*>( item ) )
+        else if( const PNS_SEGMENT* seg = pns_item_cast<const PNS_SEGMENT*>( item ) )
         {
             SEG s = seg->Seg();
             if( s.A != aP )
@@ -831,7 +830,7 @@ int PNS_OPTIMIZER::smartPadsSingle( PNS_LINE* aLine, PNS_ITEM* aPad, bool aEnd, 
     typedef std::pair<int, SHAPE_LINE_CHAIN> RtVariant;
     std::vector<RtVariant> variants;
 
-    PNS_SOLID* solid = dyn_cast<PNS_SOLID*>( aPad );
+    PNS_SOLID* solid = pns_item_cast<PNS_SOLID*>( aPad );
 
     // don't do auto-neckdown for offset pads
     if( solid && solid->Offset() != VECTOR2I( 0, 0 ) )
