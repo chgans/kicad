@@ -270,6 +270,115 @@ int PCBNEW_PAIRING_RESOLVER::MatchDpSuffix(wxString aNetName, wxString &aComplem
     return rv;
 }
 
+class PCBNEW_DEBUG_DECORATOR: public PNS_DEBUG_DECORATOR
+{
+public:
+    PCBNEW_DEBUG_DECORATOR( KIGFX::VIEW *aView = NULL ): PNS_DEBUG_DECORATOR(),
+        m_view( NULL ), m_items( NULL )
+    {
+        SetView ( aView );
+    }
+
+    ~PCBNEW_DEBUG_DECORATOR()
+    {
+        Clear();
+    }
+
+    void SetView( KIGFX::VIEW *aView )
+    {
+        Clear();
+        delete m_items;
+        m_items = NULL;
+        m_view = aView;
+        if ( m_view == NULL )
+            return;
+        m_items = new KIGFX::VIEW_GROUP( m_view );
+        m_items->SetLayer( ITEM_GAL_LAYER( GP_OVERLAY ) );
+        m_view->Add( m_items );
+        m_items->ViewSetVisible( true );
+    }
+
+    void AddPoint( VECTOR2I aP, int aColor )
+    {
+        SHAPE_LINE_CHAIN l;
+
+        l.Append( aP - VECTOR2I( -50000, -50000 ) );
+        l.Append( aP + VECTOR2I( -50000, -50000 ) );
+
+        AddLine ( l, aColor, 10000 );
+
+        l.Clear();
+        l.Append( aP - VECTOR2I( 50000, -50000 ) );
+        l.Append( aP + VECTOR2I( 50000, -50000 ) );
+
+        AddLine( l, aColor, 10000 );
+    }
+
+    void AddBox( BOX2I aB, int aColor )
+    {
+        SHAPE_LINE_CHAIN l;
+
+        VECTOR2I o = aB.GetOrigin();
+        VECTOR2I s = aB.GetSize();
+
+        l.Append( o );
+        l.Append( o.x + s.x, o.y );
+        l.Append( o.x + s.x, o.y + s.y );
+        l.Append( o.x, o.y + s.y );
+        l.Append( o );
+
+        AddLine( l, aColor, 10000 );
+    }
+
+    void AddSegment( SEG aS, int aColor )
+    {
+        SHAPE_LINE_CHAIN l;
+
+        l.Append( aS.A );
+        l.Append( aS.B );
+
+        AddLine( l, aColor, 10000 );
+    }
+
+    void AddDirections( VECTOR2D aP, int aMask, int aColor )
+    {
+        BOX2I b( aP - VECTOR2I( 10000, 10000 ), VECTOR2I( 20000, 20000 ) );
+
+        AddBox( b, aColor );
+        for( int i = 0; i < 8; i++ )
+        {
+            if( ( 1 << i ) & aMask )
+            {
+                VECTOR2I v = DIRECTION_45( ( DIRECTION_45::Directions ) i ).ToVector() * 100000;
+                AddSegment( SEG( aP, aP + v ), aColor );
+            }
+        }
+    }
+
+    void AddLine( const SHAPE_LINE_CHAIN& aLine, int aType, int aWidth )
+    {
+        ROUTER_PREVIEW_ITEM* pitem = new ROUTER_PREVIEW_ITEM( NULL, m_items );
+
+        pitem->Line( aLine, aWidth, aType );
+        m_items->Add( pitem ); // Should not be needed, as m_items has been passed as a parent group in alloc;
+        pitem->ViewSetVisible( true );
+        m_items->ViewUpdate( KIGFX::VIEW_ITEM::GEOMETRY | KIGFX::VIEW_ITEM::APPEARANCE );
+    }
+
+    void Clear()
+    {
+        if (m_view && m_items)
+        {
+            m_items->FreeItems();
+            m_items->ViewUpdate( KIGFX::VIEW_ITEM::GEOMETRY );
+        }
+    }
+
+private:
+    KIGFX::VIEW* m_view;
+    KIGFX::VIEW_GROUP* m_items;
+};
+
 PNS_ITEM* PNS_ROUTER::syncPad( D_PAD* aPad )
 {
     PNS_LAYERSET layers( 0, MAX_CU_LAYERS - 1 );
@@ -545,7 +654,7 @@ void PNS_ROUTER::SyncWorld()
     }
 
     // TODO: Create resolvers in ctor, call resolver->SetBoard() in this->SetBoard() and delete it in dtor
-
+    // TBD: Same remark as with m_sizes.SetMinimumTrackWidth in startRouting()
     int worstClearance = m_board->GetDesignSettings().GetBiggestClearanceValue();
     m_clearanceResolver = new PNS_PCBNEW_CLEARANCE_RESOLVER( this );
     m_world->SetClearanceResolver( m_clearanceResolver );
@@ -561,6 +670,7 @@ PNS_ROUTER::PNS_ROUTER()
 
     m_clearanceResolver = NULL;
     m_pairingResolver = NULL;
+    m_debugDecorator = new PCBNEW_DEBUG_DECORATOR();
 
     m_state = IDLE;
     m_world = NULL;
@@ -591,6 +701,9 @@ void PNS_ROUTER::SetView( KIGFX::VIEW* aView )
     m_previewItems->SetLayer( ITEM_GAL_LAYER( GP_OVERLAY ) );
     m_view->Add( m_previewItems );
     m_previewItems->ViewSetVisible( true );
+
+    if ( m_debugDecorator != NULL )
+        m_debugDecorator->SetView(m_view);
 }
 
 
@@ -600,6 +713,9 @@ PNS_ROUTER::~PNS_ROUTER()
 
     if( m_previewItems )
         delete m_previewItems;
+
+    if ( m_debugDecorator )
+        delete m_debugDecorator;
 }
 
 
@@ -624,6 +740,8 @@ void PNS_ROUTER::ClearWorld()
         delete m_previewItems;
 
     m_clearanceResolver = NULL;
+    m_pairingResolver = NULL;
+    m_debugDecorator = NULL;
     m_world = NULL;
     m_placer = NULL;
     m_previewItems = NULL;
@@ -756,6 +874,7 @@ bool PNS_ROUTER::StartRouting( const VECTOR2I& aP, PNS_ITEM* aStartItem, int aLa
     m_placer->SetInitialWorld( m_world );
     m_placer->UpdateSizeSettings( m_sizes );
     m_placer->SetLayer( aLayer );
+    m_placer->SetDebugDecorator( m_debugDecorator );
 
     VECTOR2I startPoint = aP;
     bool dummy;
@@ -776,63 +895,6 @@ bool PNS_ROUTER::StartRouting( const VECTOR2I& aP, PNS_ITEM* aStartItem, int aLa
 BOARD* PNS_ROUTER::GetBoard()
 {
     return m_board;
-}
-
-void PNS_ROUTER::DrawDebugPoint(VECTOR2I aP, int aColor)
-{
-    SHAPE_LINE_CHAIN l;
-
-    l.Append( aP - VECTOR2I( -50000, -50000 ) );
-    l.Append( aP + VECTOR2I( -50000, -50000 ) );
-
-    DisplayDebugLine ( l, aColor, 10000 );
-
-    l.Clear();
-    l.Append( aP - VECTOR2I( 50000, -50000 ) );
-    l.Append( aP + VECTOR2I( 50000, -50000 ) );
-
-    DisplayDebugLine( l, aColor, 10000 );
-}
-
-void PNS_ROUTER::DrawDebugBox(BOX2I aB, int aColor)
-{
-    SHAPE_LINE_CHAIN l;
-
-    VECTOR2I o = aB.GetOrigin();
-    VECTOR2I s = aB.GetSize();
-
-    l.Append( o );
-    l.Append( o.x + s.x, o.y );
-    l.Append( o.x + s.x, o.y + s.y );
-    l.Append( o.x, o.y + s.y );
-    l.Append( o );
-
-    DisplayDebugLine( l, aColor, 10000 );
-}
-
-void PNS_ROUTER::DrawDebugSeg(SEG aS, int aColor)
-{
-    SHAPE_LINE_CHAIN l;
-
-    l.Append( aS.A );
-    l.Append( aS.B );
-
-    DisplayDebugLine( l, aColor, 10000 );
-}
-
-void PNS_ROUTER::DrawDebugDirs(VECTOR2D aP, int aMask, int aColor)
-{
-    BOX2I b( aP - VECTOR2I( 10000, 10000 ), VECTOR2I( 20000, 20000 ) );
-
-    DrawDebugBox( b, aColor );
-    for( int i = 0; i < 8; i++ )
-    {
-        if( ( 1 << i ) & aMask )
-        {
-            VECTOR2I v = DIRECTION_45( ( DIRECTION_45::Directions ) i ).ToVector() * 100000;
-            DrawDebugSeg( SEG( aP, aP + v ), aColor );
-        }
-    }
 }
 
 void PNS_ROUTER::eraseView()
@@ -873,28 +935,6 @@ void PNS_ROUTER::DisplayItems( const PNS_ITEMSET& aItems )
 {
     BOOST_FOREACH( const PNS_ITEM* item, aItems.CItems() )
         DisplayItem( item );
-}
-
-
-void PNS_ROUTER::DisplayDebugLine( const SHAPE_LINE_CHAIN& aLine, int aType, int aWidth )
-{
-    ROUTER_PREVIEW_ITEM* pitem = new ROUTER_PREVIEW_ITEM( NULL, m_previewItems );
-
-    pitem->Line( aLine, aWidth, aType );
-    m_previewItems->Add( pitem );
-    pitem->ViewSetVisible( true );
-    m_previewItems->ViewUpdate( KIGFX::VIEW_ITEM::GEOMETRY | KIGFX::VIEW_ITEM::APPEARANCE );
-}
-
-
-void PNS_ROUTER::DisplayDebugPoint( const VECTOR2I aPos, int aType )
-{
-    ROUTER_PREVIEW_ITEM* pitem = new ROUTER_PREVIEW_ITEM( NULL, m_previewItems );
-
-    pitem->Point( aPos, aType );
-    m_previewItems->Add( pitem );
-    pitem->ViewSetVisible( true );
-    m_previewItems->ViewUpdate( KIGFX::VIEW_ITEM::GEOMETRY | KIGFX::VIEW_ITEM::APPEARANCE );
 }
 
 

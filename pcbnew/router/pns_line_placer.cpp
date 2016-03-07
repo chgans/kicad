@@ -1014,7 +1014,7 @@ void PNS_LINE_PLACER::updateLeadingRatLine()
     PNS_TOPOLOGY topo( Router(), m_lastNode );
 
     if( topo.LeadingRatLine( &current, ratLine ) )
-        Router()->DisplayDebugLine( ratLine, 5, 10000 );
+        DrawDebugLine( ratLine, 5, 10000 );
 }
 
 

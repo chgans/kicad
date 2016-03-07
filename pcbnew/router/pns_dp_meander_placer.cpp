@@ -152,11 +152,11 @@ const SEG PNS_DP_MEANDER_PLACER::baselineSegment( const PNS_DIFF_PAIR::COUPLED_S
 }
 
 
-static bool pairOrientation( const PNS_DIFF_PAIR::COUPLED_SEGMENTS& aPair )
+bool PNS_DP_MEANDER_PLACER::pairOrientation( const PNS_DIFF_PAIR::COUPLED_SEGMENTS& aPair )
 {
     VECTOR2I midp = ( aPair.coupledP.A + aPair.coupledN.A ) / 2;
 
-    //Router()->DrawDebugPoint (midp, 6);
+    DrawDebugPoint (midp, 6);
 
     return aPair.coupledP.Side( midp ) > 0;
 }
@@ -188,11 +188,11 @@ bool PNS_DP_MEANDER_PLACER::Move( const VECTOR2I& aP, PNS_ITEM* aEndItem )
     if( coupledSegments.size() == 0 )
         return false;
 
-    //Router()->DisplayDebugLine ( tuned.CP(), 5, 20000 );
-    //Router()->DisplayDebugLine ( tuned.CN(), 4, 20000 );
+    DrawDebugLine ( tuned.CP(), 5, 20000 );
+    DrawDebugLine ( tuned.CN(), 4, 20000 );
 
-    //Router()->DisplayDebugLine ( m_originPair.CP(), 5, 20000 );
-    //Router()->DisplayDebugLine ( m_originPair.CN(), 4, 20000 );
+    DrawDebugLine ( m_originPair.CP(), 5, 20000 );
+    DrawDebugLine ( m_originPair.CN(), 4, 20000 );
 
     m_result = PNS_MEANDERED_LINE( this, true );
     m_result.SetWidth( tuned.Width() );
@@ -207,13 +207,13 @@ bool PNS_DP_MEANDER_PLACER::Move( const VECTOR2I& aP, PNS_ITEM* aEndItem )
     BOOST_FOREACH( const PNS_ITEM* item, m_tunedPathP.CItems() )
     {
         if( const PNS_LINE* l = dyn_cast<const PNS_LINE*>( item ) )
-            Router()->DisplayDebugLine( l->CLine(), 5, 10000 );
+            DrawDebugLine( l->CLine(), 5, 10000 );
     }
 
     BOOST_FOREACH( const PNS_ITEM* item, m_tunedPathN.CItems() )
     {
         if( const PNS_LINE* l = dyn_cast<const PNS_LINE*>( item ) )
-            Router()->DisplayDebugLine( l->CLine(), 5, 10000 );
+            DrawDebugLine( l->CLine(), 5, 10000 );
     }
 
     int curIndexP = 0, curIndexN = 0;
@@ -222,7 +222,7 @@ bool PNS_DP_MEANDER_PLACER::Move( const VECTOR2I& aP, PNS_ITEM* aEndItem )
     {
         SEG base = baselineSegment( sp );
 
-        Router()->DrawDebugSeg( base, 3 );
+        DrawDebugSegment( base, 3 );
 
         while( sp.indexP >= curIndexP )
         {

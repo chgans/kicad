@@ -27,6 +27,22 @@
 #include "pns_itemset.h"
 #include "pns_segment.h"
 
+class PNS_DEBUG_DECORATOR
+{
+public:
+    PNS_DEBUG_DECORATOR()
+    {}
+    virtual ~PNS_DEBUG_DECORATOR()
+    {}
+
+    virtual void AddPoint( VECTOR2I aP, int aColor ) = 0;
+    virtual void AddLine( const SHAPE_LINE_CHAIN& aLine, int aType = 0, int aWidth = 0 ) = 0;
+    virtual void AddSegment( SEG aS, int aColor ) = 0;
+    virtual void AddBox( BOX2I aB, int aColor ) = 0;
+    virtual void AddDirections( VECTOR2D aP, int aMask, int aColor ) = 0;
+    virtual void Clear() = 0;
+};
+
 class PNS_ROUTER_IFACE;
 class PNS_ITEM;
 class PNS_NODE;
@@ -207,6 +223,17 @@ public:
     {
     }
 
+    /**
+     * Function SetDebugDecorator
+     *
+     * Assign a debug decorator allowing this algo to draw extra graphics for visual debugging
+     */
+    void SetDebugDecorator( PNS_DEBUG_DECORATOR *aDecorator )
+    {
+        m_debugDecorator = aDecorator;
+    }
+
+
 protected:
     void SetFailureReason(const wxString &aReason)
     {
@@ -240,10 +267,48 @@ protected:
         return (aAnchor == segment.A || aAnchor == segment.B );
     }
 
+    // TODO: ensure not NULL by using a null decorator per default
+    void DrawDebugPoint( VECTOR2I aP, int aColor )
+    {
+        if( m_debugDecorator )
+            m_debugDecorator->AddPoint( aP, aColor );
+    }
+
+    void DrawDebugLine( const SHAPE_LINE_CHAIN& aLine, int aType = 0, int aWidth = 0 )
+    {
+        if( m_debugDecorator )
+            m_debugDecorator->AddLine( aLine, aType, aWidth );
+    }
+
+    void DrawDebugSegment( SEG aS, int aColor )
+    {
+        if( m_debugDecorator )
+            m_debugDecorator->AddSegment( aS, aColor );
+    }
+
+    void DrawDebugBox( BOX2I aB, int aColor )
+    {
+        if( m_debugDecorator )
+            m_debugDecorator->AddBox( aB, aColor );
+    }
+
+    void DrawDebugDirections( VECTOR2D aP, int aMask, int aColor )
+    {
+        if( m_debugDecorator )
+            m_debugDecorator->AddDirections( aP, aMask, aColor );
+    }
+
+    void ClearDebugDecorator()
+    {
+        if( m_debugDecorator )
+            m_debugDecorator->Clear();
+    }
+
 private:
     wxString m_failureReason;
     /*const*/ PNS_NODE *m_initialWorld;
     /*const*/ PNS_NODE *m_resultingWorld;
+    PNS_DEBUG_DECORATOR *m_debugDecorator;
 };
 
 #endif

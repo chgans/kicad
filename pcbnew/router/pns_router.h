@@ -54,6 +54,7 @@ class PNS_VIA;
 class PNS_CLEARANCE_RESOLVER;
 class PNS_PCBNEW_CLEARANCE_RESOLVER;
 class PCBNEW_PAIRING_RESOLVER;
+class PCBNEW_DEBUG_DECORATOR;
 class PNS_SHOVE;
 class PNS_DRAGGER;
 
@@ -80,14 +81,6 @@ public:
 
     virtual ~PNS_ROUTER_IFACE()
     {}
-
-    // Debugging
-    virtual void DisplayDebugLine( const SHAPE_LINE_CHAIN& aLine, int aType = 0, int aWidth = 0 ) = 0;
-    virtual void DisplayDebugPoint( const VECTOR2I aPos, int aType = 0 ) = 0;
-    virtual void DrawDebugPoint( VECTOR2I aP, int aColor ) = 0;
-    virtual void DrawDebugBox( BOX2I aB, int aColor ) = 0;
-    virtual void DrawDebugSeg( SEG aS, int aColor ) = 0;
-    virtual void DrawDebugDirs( VECTOR2D aP, int aMask, int aColor ) = 0;
 };
 
 /**
@@ -211,18 +204,6 @@ public:
     virtual bool SnappingEnabled() const;
     virtual const VECTOR2I SnapToItem( PNS_ITEM* aItem, VECTOR2I aP, bool& aSplitsSegment );
 
-    /*
-     * PNS_ROUTER_IFACE implementation
-     */
-
-    // Debugging
-    virtual void DisplayDebugLine( const SHAPE_LINE_CHAIN& aLine, int aType = 0, int aWidth = 0 );
-    virtual void DisplayDebugPoint( const VECTOR2I aPos, int aType = 0 );
-    virtual void DrawDebugPoint( VECTOR2I aP, int aColor );
-    virtual void DrawDebugBox( BOX2I aB, int aColor );
-    virtual void DrawDebugSeg( SEG aS, int aColor );
-    virtual void DrawDebugDirs( VECTOR2D aP, int aMask, int aColor );
-
 private:
     void movePlacing( const VECTOR2I& aP, PNS_ITEM* aItem );
     void moveDragging( const VECTOR2I& aP, PNS_ITEM* aItem );
@@ -266,6 +247,7 @@ private:
     PNS_ROUTING_SETTINGS m_settings;
     PNS_PCBNEW_CLEARANCE_RESOLVER* m_clearanceResolver;
     PCBNEW_PAIRING_RESOLVER* m_pairingResolver;
+    PCBNEW_DEBUG_DECORATOR* m_debugDecorator;
 
     boost::unordered_set<BOARD_CONNECTED_ITEM*> m_hiddenItems;
 

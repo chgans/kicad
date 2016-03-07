@@ -125,6 +125,8 @@ private:
 
     int origPathLength() const;
 
+    bool pairOrientation( const PNS_DIFF_PAIR::COUPLED_SEGMENTS& aPair );
+
     ///> pointer to world to search colliding items
     PNS_NODE* m_world;
 

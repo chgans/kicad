@@ -746,12 +746,12 @@ void PNS_DIFF_PAIR_PLACER::updateLeadingRatLine()
 
     if( topo.LeadingRatLine( &m_currentTrace.PLine(), ratLineP ) )
     {
-        Router()->DisplayDebugLine( ratLineP, 1, 10000 );
+        DrawDebugLine( ratLineP, 1, 10000 );
     }
 
     if( topo.LeadingRatLine ( &m_currentTrace.NLine(), ratLineN ) )
     {
-        Router()->DisplayDebugLine( ratLineN, 3, 10000 );
+        DrawDebugLine( ratLineN, 3, 10000 );
     }
 }
 
