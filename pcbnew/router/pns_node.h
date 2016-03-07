@@ -42,7 +42,6 @@ class PNS_SOLID;
 class PNS_VIA;
 class PNS_RATSNEST;
 class PNS_INDEX;
-class BOARD_CONNECTED_ITEM;
 
 /**
  * Class PNS_CLEARANCE_RESOLVER
@@ -394,7 +393,12 @@ public:
     int RemoveByMarker( int aMarker );
     void SetCollisionFilter( PNS_COLLISION_FILTER* aFilter );
 
-    PNS_ITEM* FindItemByParent( const BOARD_CONNECTED_ITEM *aParent );
+    /**
+     * Function GetItemsForNet()
+     *
+     * Returns list of all items in a given net.
+     */
+    PNS_ITEM_LIST* GetItemsForNet( int aNet );
 
     bool HasChildren() const
     {

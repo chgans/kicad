@@ -37,6 +37,7 @@
 
 class BOARD;
 class BOARD_ITEM;
+class BOARD_CONNECTED_ITEM;
 class D_PAD;
 class TRACK;
 class VIA;

@@ -21,8 +21,6 @@
 #include <vector>
 #include <cassert>
 
-#include "class_board_connected_item.h"
-
 #include <math/vector2d.h>
 
 #include <geometry/seg.h>
@@ -1220,7 +1218,7 @@ void PNS_NODE::KillChildren()
 
 void PNS_NODE::AllItemsInNet( int aNet, std::set<PNS_ITEM*>& aItems )
 {
-    PNS_INDEX::NET_ITEMS_LIST* l_cur = m_index->GetItemsForNet( aNet );
+    PNS_ITEM_LIST* l_cur = m_index->GetItemsForNet( aNet );
 
     if( l_cur )
     {
@@ -1230,10 +1228,10 @@ void PNS_NODE::AllItemsInNet( int aNet, std::set<PNS_ITEM*>& aItems )
 
     if( !isRoot() )
     {
-        PNS_INDEX::NET_ITEMS_LIST* l_root = m_root->m_index->GetItemsForNet( aNet );
+        PNS_ITEM_LIST* l_root = m_root->m_index->GetItemsForNet( aNet );
 
         if( l_root )
-            for( PNS_INDEX::NET_ITEMS_LIST::iterator i = l_root->begin(); i!= l_root->end(); ++i )
+            for( PNS_ITEM_LIST::iterator i = l_root->begin(); i!= l_root->end(); ++i )
                 if( !overrides( *i ) )
                     aItems.insert( *i );
     }
@@ -1317,14 +1315,7 @@ void PNS_NODE::SetCollisionFilter( PNS_COLLISION_FILTER* aFilter )
     m_collisionFilter = aFilter;
 }
 
-
-PNS_ITEM *PNS_NODE::FindItemByParent( const BOARD_CONNECTED_ITEM* aParent )
+PNS_ITEM_LIST *PNS_NODE::GetItemsForNet(int aNet)
 {
-    PNS_INDEX::NET_ITEMS_LIST* l_cur = m_index->GetItemsForNet( aParent->GetNetCode() );
-
-    BOOST_FOREACH( PNS_ITEM*item, *l_cur )
-        if( item->Parent() == aParent )
-            return item;
-
-    return NULL;
+    return m_index->GetItemsForNet( aNet );
 }

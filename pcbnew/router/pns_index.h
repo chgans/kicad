@@ -26,7 +26,6 @@
 #include <boost/foreach.hpp>
 #include <boost/range/adaptor/map.hpp>
 
-#include <list>
 #include <geometry/shape_index.h>
 
 #include "pns_item.h"
@@ -41,7 +40,6 @@
 class PNS_INDEX
 {
 public:
-    typedef std::list<PNS_ITEM*>            NET_ITEMS_LIST;
     typedef SHAPE_INDEX<PNS_ITEM*>          ITEM_SHAPE_INDEX;
     typedef boost::unordered_set<PNS_ITEM*> ITEM_SET;
 
@@ -113,7 +111,7 @@ public:
      *
      * Returns list of all items in a given net.
      */
-    NET_ITEMS_LIST* GetItemsForNet( int aNet );
+    PNS_ITEM_LIST *GetItemsForNet( int aNet );
 
     /**
      * Function Contains()
@@ -150,7 +148,7 @@ private:
     ITEM_SHAPE_INDEX* getSubindex( const PNS_ITEM* aItem );
 
     ITEM_SHAPE_INDEX* m_subIndices[MaxSubIndices];
-    std::map<int, NET_ITEMS_LIST> m_netMap;
+    std::map<int, PNS_ITEM_LIST> m_netMap;
     ITEM_SET m_allItems;
 };
 
@@ -303,7 +301,7 @@ PNS_INDEX::~PNS_INDEX()
     Clear();
 }
 
-PNS_INDEX::NET_ITEMS_LIST* PNS_INDEX::GetItemsForNet( int aNet )
+PNS_ITEM_LIST *PNS_INDEX::GetItemsForNet( int aNet )
 {
     if( m_netMap.find( aNet ) == m_netMap.end() )
         return NULL;

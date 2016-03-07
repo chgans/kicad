@@ -1,0 +1,47 @@
+Still to be done:
+- Remove KiCad dependency from node/index/item (board_connected_item)
+- build libpns manually and make sure there's no other deps than math/geom and boost
+
+Future:
+- unit/regression test suites!!! (no more fear of refactoring)
+- get rid of wxDeps (string, translation and timers)
+- Make ALGO straight forward to use: setWorld(), execute(), getResult()
+- Properly fix coupling of KiCad/PNS via and layer(set)
+  Can we fix the Via problem and the layer problem with one single class like PNS_LAYER_RESOLVER and/or PNS_VIA_RESOLVER
+- Remove PLACER dependency from items (why pns_meander needs pns_meander_placer_base.h?)
+- Remove special cases for PNS_LINE in PNS_ITEM and PNS_ITEMSET ?
+- Only router and algorithm should have access to NODE
+- Remove NODE dependency from items (line, meander, via), settings
+  - Introduce an PNS_INDEX_PROXY (same iface as index), implemented by PNS_NODE
+  - Remove NODE dependency from optimiser and topology (using the PNS_INDEX_PROXY trick?)
+
+Far future:
+- Make Node recursive (can branch/merge from/to anywhere, not just root)
+- Create a simple ALGO_RUNNER, that can recursively be used by other algo)
+- Add storage backend to NODE (typ. git)
+- Add long-running router algorithm, autorouter scripts
+- Get more algorithm implementation from the research community!
+
+Node:
+PNS_NODE *branch() const;
+void commit (const PNS_NODE *other);
+add/remove/replace
+parent()
+children()
+root()
+depth()
+clear() // aka killChildren
+itemsAddedToRoot()
+itemsRemovedFromRoot()
+
+Collision and hit tests
+check/query colliding
+find nearest obstacles
+
+Joint utilities
+jountCount()
+assembleLine
+findJoint
+lockJoint
+findLinesBetween joints
+findLineEnds

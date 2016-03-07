@@ -21,6 +21,8 @@
 #ifndef __PNS_ITEM_H
 #define __PNS_ITEM_H
 
+#include <list>
+
 #include <math/vector2d.h>
 
 #include <geometry/shape.h>
@@ -30,7 +32,6 @@
 
 #include "pns_layerset.h"
 
-class BOARD_CONNECTED_ITEM;
 class PNS_NODE;
 
 enum LineMarker {
@@ -69,14 +70,14 @@ Casted pns_item_cast( From aObject )
     return NULL;
 }
 
+class PNS_ITEM;
+typedef std::list<PNS_ITEM*> PNS_ITEM_LIST;
+
 /**
  * Class PNS_ITEM
  *
  * Base class for PNS router board items. Implements the shared properties of all PCB items -
  * net, spanned layers, geometric shape & refererence to owning model.
- * @todo Remove dependencies on BOARD_CONNECTED_ITEM, by either:
- *  - Remove the whole parent story (Let the user's code track association themselves)
- *  - Replace BOARD_CONNECTED_ITEM *m_parent by void *m_cookie, and add convenience accessor like 'T* Parent<T>()'
  */
 class PNS_ITEM
 {
@@ -172,9 +173,10 @@ public:
      *
      * Sets the corresponding parent object in the host application's model.
      */
-    void SetParent( BOARD_CONNECTED_ITEM* aParent )
+    template <class T>
+    void SetParent( T* aParent )
     {
-        m_parent = aParent;
+        m_parent = static_cast<void*>(aParent);
     }
 
     /**
@@ -182,9 +184,10 @@ public:
      *
      * Returns the corresponding parent object in the host application's model.
      */
-    BOARD_CONNECTED_ITEM* Parent() const
+    template <class T>
+    T* Parent() const
     {
-        return m_parent;
+        return static_cast<T*>(m_parent);
     }
 
     /**
@@ -368,7 +371,7 @@ private:
 protected:
     PnsKind                 m_kind;
 
-    BOARD_CONNECTED_ITEM*   m_parent;
+    void*                   m_parent;
     PNS_NODE*               m_owner;
     PNS_LAYERSET            m_layers;
 

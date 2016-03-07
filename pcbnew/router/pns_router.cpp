@@ -134,10 +134,11 @@ PNS_PCBNEW_CLEARANCE_RESOLVER::~PNS_PCBNEW_CLEARANCE_RESOLVER()
 
 int PNS_PCBNEW_CLEARANCE_RESOLVER::localPadClearance( const PNS_ITEM* aItem ) const
 {
-    if( !aItem->Parent() || aItem->Parent()->Type() != PCB_PAD_T )
+    BOARD_CONNECTED_ITEM *parent = aItem->Parent<BOARD_CONNECTED_ITEM>();
+    if( !parent || parent->Type() != PCB_PAD_T )
         return 0;
 
-    const D_PAD* pad = static_cast<D_PAD*>( aItem->Parent() );
+    const D_PAD* pad = static_cast<D_PAD*>( parent );
     return pad->GetLocalClearance();
 }
 
@@ -1020,7 +1021,7 @@ void PNS_ROUTER::updateView( PNS_NODE* aNode, PNS_ITEMSET& aCurrent )
 
     BOOST_FOREACH( PNS_ITEM* item, removed )
     {
-        BOARD_CONNECTED_ITEM* parent = item->Parent();
+        BOARD_CONNECTED_ITEM* parent = item->Parent<BOARD_CONNECTED_ITEM>();
 
         if( parent )
         {
@@ -1094,7 +1095,7 @@ void PNS_ROUTER::CommitRouting( PNS_NODE* aNode )
 
     for( unsigned int i = 0; i < removed.size(); i++ )
     {
-        BOARD_CONNECTED_ITEM* parent = removed[i]->Parent();
+        BOARD_CONNECTED_ITEM* parent = removed[i]->Parent<BOARD_CONNECTED_ITEM>();
 
         if( parent )
         {

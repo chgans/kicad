@@ -64,6 +64,8 @@ private:
 
     void initSizeSettings(PNS_SIZES_SETTINGS &aPNSSettings, const BOARD* aBoard, const PNS_ITEM* aStartItem, int aNet = -1 );
     void importCurrentSizeSettings( PNS_SIZES_SETTINGS &aPNSSettings, const BOARD_DESIGN_SETTINGS &aBoardSettings );
+
+    PNS_ITEM *FindItemByParent( PNS_NODE* aNode, const BOARD_CONNECTED_ITEM* aParent );
 };
 
 #endif

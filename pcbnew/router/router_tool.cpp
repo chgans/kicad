@@ -492,12 +492,12 @@ bool ROUTER_TOOL::prepareInteractive()
 	// for some reason I don't understand, GetNetclass() may return null sometimes...
     if( m_startItem &&
         m_startItem->Net() >= 0 &&
-        m_startItem->Parent() &&
-        m_startItem->Parent()->GetNetClass() )
+        m_startItem->Parent<BOARD_CONNECTED_ITEM>() &&
+        m_startItem->Parent<BOARD_CONNECTED_ITEM>()->GetNetClass() )
     {
         highlightNet( true, m_startItem->Net() );
         // Update track width and via size shown in main toolbar comboboxes
-        m_frame->SetCurrentNetClass( m_startItem->Parent()->GetNetClass()->GetName() );
+        m_frame->SetCurrentNetClass( m_startItem->Parent<BOARD_CONNECTED_ITEM>()->GetNetClass()->GetName() );
     }
     else
         m_frame->SetCurrentNetClass( NETCLASS::Default );
@@ -850,7 +850,7 @@ int ROUTER_TOOL::InlineDrag( const TOOL_EVENT& aEvent )
     m_router->SyncWorld();
     m_router->SetView( getView() );
 
-    m_startItem = m_router->GetWorld()->FindItemByParent( item );
+    m_startItem = FindItemByParent( m_router->GetWorld(), item );
 
     VECTOR2I p0 = ctls->GetCursorPosition();
 
@@ -907,4 +907,15 @@ void ROUTER_TOOL::importCurrentSizeSettings( PNS_SIZES_SETTINGS &aPNSSettings, c
     aPNSSettings.SetTrackWidth( aBoardSettings.GetCurrentTrackWidth() );
     aPNSSettings.SetViaDiameter( aBoardSettings.GetCurrentViaSize() );
     aPNSSettings.SetViaDrill( aBoardSettings.GetCurrentViaDrill() );
+}
+
+PNS_ITEM *ROUTER_TOOL::FindItemByParent(PNS_NODE *aNode, const BOARD_CONNECTED_ITEM *aParent)
+{
+    PNS_ITEM_LIST* l_cur = aNode->GetItemsForNet( aParent->GetNetCode() );
+
+    BOOST_FOREACH( PNS_ITEM*item, *l_cur )
+            if( item->Parent<BOARD_CONNECTED_ITEM>() == aParent )
+            return item;
+
+    return NULL;
 }
